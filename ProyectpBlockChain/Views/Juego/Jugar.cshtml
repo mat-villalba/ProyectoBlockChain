@@ -1,5 +1,26 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_LayoutJuego";
 }
+
+<div class="contenedor-historia">
+
+    <div class="contenedor-imagen">
+        <img src="~/labspixelAlt.png" alt="historia" />
+    </div>
+    <!--Pongo temporalmente un texto de ejemplo que luego va a ser reemplazado por la información que se resiva del controlador con el Capitulo.descripción-->
+    <div class="contenedor-texto">
+        <p id="texto-historia">
+            Holaaa este es un texto de ejemploo, quiero que el texto pueda tener más de una línea y siga funcionandoo. Bla bla bla bla bla bla seleccioná una de las dos opciones!
+        </p>
+        <p id="texto-visible"></p>
+    </div>
+
+</div>
+
+<div class="contenedor-opciones">
+    <div id="opciones">
+        <!--Acá vamos a poner Capitulo.Op1 y Capitulo.Op2 para cada texto del boton-->
+        <a class="boton-opcion" asp-controller="" asp-action="">Opción 1</a>
+        <a class="boton-opcion" asp-controller="" asp-action="">Opción 2</a>
+    </div>
+</div>

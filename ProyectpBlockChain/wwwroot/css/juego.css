@@ -1,0 +1,100 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "JetBrains Mono",monospace;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    row-gap: 0.5em;
+    min-height: 90vh;
+    background-image: url('../fondoTemp.gif');
+    background-size: cover;
+    background-position: center;
+}
+
+.contenedor-historia {
+    width: 900px;
+    display: flex;
+    flex-direction: column;
+    border: 4px ridge #155639;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.contenedor-opciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5em;
+    row-gap: 0.5em;
+}
+
+.contenedor-imagen img {
+    width: 100%;
+    max-height: 450px;
+    object-fit: cover;
+    display: block;
+}
+
+.contenedor-texto {
+    background-color: #000;
+    color: #fff;
+    border: 2px ridge #155639;
+    padding: 0.5em;
+    font-size: 18px;
+    line-height: 1.5;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+#texto-historia {
+    display: none;
+}
+
+#texto-visible {
+    margin: 0;
+    padding: 20px;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.boton-opcion {
+    align-items: center;
+    background-color: #000;
+    border: none;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 2px 4px, rgba(0, 0, 0, 0.3) 0 7px 13px -3px, #1a1a1a 0 -3px 0 inset;
+    color: #25b26e;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: "JetBrains Mono", monospace;
+    height: 48px;
+    justify-content: center;
+    padding: 0 16px;
+    font-size: 18px;
+    line-height: 1;
+    transition: transform .15s ease, box-shadow .15s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
+}
+
+    .boton-opcion:hover {
+        box-shadow: rgba(0, 0, 0, 0.6) 0 4px 8px, rgba(0, 0, 0, 0.4) 0 7px 13px -3px, #1F7D53 0 -3px 0 inset;
+        transform: translateY(-2px);
+    }
+
+    .boton-opcion:active {
+        box-shadow: #27391C 0 3px 7px inset;
+        transform: translateY(2px);
+    }
+
+    .boton-opcion:focus {
+        outline: 2px solid #279463;
+        outline-offset: 2px;
+    }
