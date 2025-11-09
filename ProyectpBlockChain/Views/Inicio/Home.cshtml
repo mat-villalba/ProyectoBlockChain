@@ -3,12 +3,12 @@
 *@
 @{
 }
-<!--Falta aplicar método que inice la partida-->
 <div class="cartel-inicio">
+    <h4>Listo para iniciar la aventura?</h4>
     <form method="post">
         <div>
-            <h4>Listo para iniciar la aventura?</h4>
-            <a class="boton" asp-controller="Juego" asp-action="Jugar">Iniciar partida</a>
+            <a class="boton" asp-controller="Juego" asp-action="CrearPartida">Crear partida</a>
+            <a class="boton" asp-controller="Juego" asp-action="Unirse">Ingresar a partida existente</a>
         </div>
     </form>
 </div>

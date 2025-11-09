@@ -74,6 +74,7 @@ namespace ProyectoBlockChain.Logica
                             .ToListAsync();
             Capitulo primerCapitulo = capitulosIniciales[rand.Next(capitulosIniciales.Count)];
             return primerCapitulo;
+            /*Solo vamos a tener un capitulo inicial*/
         }
 
         public async Task UnirseAPartida(string idJugador, int partidaId)
@@ -110,6 +111,7 @@ namespace ProyectoBlockChain.Logica
             var capitulo = await _context.Capitulos.FindAsync(estadoPartida.CapituloActualId);
             if (capitulo == null) throw new Exception("Capítulo actual no encontrado.");
 
+            //El if dice que si la ronda está activa y se pasó el tiempo límite, se finaliza la ronda
             if (estadoPartida.RondaActiva && (DateTime.UtcNow - estadoPartida.InicioRonda).TotalSeconds > capitulo.TiempoLimiteSegundos)
             {
                 return await FinalizarRonda(partidaId);

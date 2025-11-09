@@ -12,6 +12,7 @@ namespace ProyectoBlockChain.Web.Controllers
         public IActionResult Home()
         {
             return View();
-        }   
+        }
+
     }
 }
