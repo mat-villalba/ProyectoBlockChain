@@ -1,4 +1,77 @@
-﻿@*
-*@
-@{
-}
+﻿<h1>Bienvenido al juego blockchain</h1>
+<button id="connectWalletBtn">Conectar billetera</button>
+<p id="walletAddress"></p>
+
+<button id="startGameBtn" disabled>Comenzar juego</button>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script>
+    let userAddress = null;
+
+    async function connectWallet() {
+        if (typeof window.ethereum === "undefined") {
+            alert("Necesitás tener MetaMask instalado para continuar.");
+            return;
+        }
+
+        try {
+            // 1️⃣ Pedir cuenta al usuario (abre MetaMask)
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            const account = accounts[0];
+            userAddress = account;
+
+            // 2️⃣ Pedirle que firme un mensaje (esto siempre abre MetaMask)
+            const message = `Iniciá sesión para jugar - ${new Date().toLocaleString()}`;
+            const signature = await window.ethereum.request({
+                method: "personal_sign",
+                params: [message, account],
+            });
+
+            // (Opcional) Podrías enviar { account, signature } al backend para verificar la firma
+            console.log("Firma generada:", signature);
+
+            // 3️⃣ Actualizar UI
+            document.getElementById("walletAddress").innerText = `Billetera conectada: ${userAddress}`;
+            document.getElementById("startGameBtn").disabled = false;
+
+        } catch (error) {
+            console.error("Error al conectar o firmar:", error);
+            alert("No se pudo conectar la billetera.");
+        }
+    }
+
+    document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
+
+    // 4️⃣ Si el usuario cambia o desconecta la cuenta
+    if (window.ethereum) {
+        window.ethereum.on("accountsChanged", (accounts) => {
+            if (accounts.length === 0) {
+                userAddress = null;
+                document.getElementById("walletAddress").innerText = "Billetera desconectada.";
+                document.getElementById("startGameBtn").disabled = true;
+            } else {
+                userAddress = accounts[0];
+                document.getElementById("walletAddress").innerText = `Billetera conectada: ${userAddress}`;
+                document.getElementById("startGameBtn").disabled = false;
+            }
+        });
+    }
+
+    // 5️⃣ Al presionar "Comenzar juego"
+    document.getElementById("startGameBtn").addEventListener("click", async () => {
+        if (!userAddress) {
+            alert("Primero conectá y firmá con tu billetera para comenzar el juego.");
+            return;
+        }
+
+        // Verificar que MetaMask sigue conectada
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (accounts.length === 0 || accounts[0] !== userAddress) {
+            alert("Tu billetera se desconectó. Volvé a iniciar sesión.");
+            return;
+        }
+
+        // Redirigir al juego
+        window.location.href = "/Juego/Jugar";
+    });
+</script>

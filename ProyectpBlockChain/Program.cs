@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Microsoft.Extensions.Options;
+using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica;
-using Nethereum.Web3;
 using ProyectoBlockChain.Logica.Interfaces;
+using ProyectoBlockChain.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,22 +16,23 @@ builder.Services.AddDbContext<AventuraBlockchainDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
-// Registrar Nethereum (Conexión a la Blockchain)
-string nodeUrl = builder.Configuration["BlockchainSettings:NodeUrl"];
-string privateKey = builder.Configuration["BlockchainSettings:BackendPrivateKey"]; // Lee de appsettings.json
+// Registrar la configuración de blockchain
+builder.Services.Configure<BlockchainSettings>(
+    builder.Configuration.GetSection("BlockchainSettings"));
 
-Account backendAccount = new(privateKey);
-builder.Services.AddSingleton<Account>(backendAccount);
-Web3 web3Instance = new Web3(backendAccount, nodeUrl);
-builder.Services.AddSingleton<IWeb3>(web3Instance);
+// Web3 solo si necesitás hacer llamadas de lectura desde el backend
+builder.Services.AddSingleton(provider =>
+{
+    var blockchainSettings = provider.GetRequiredService<IOptions<BlockchainSettings>>().Value;
+    return new Web3(blockchainSettings.NodeUrl); // Solo lectura
+});
 
-
-builder.Services.AddScoped<JuegoLogica>();
+/*builder.Services.AddScoped<JuegoLogica>();*/
 builder.Services.AddScoped<HistoriaLogica>();
 builder.Services.AddScoped<UsuarioLogica>();
 builder.Services.AddSingleton<EstadoGlobal>();
 
-builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();
+/*builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();*/
 builder.Services.AddScoped<ILogicaHistorial, HistoriaLogica>();
 builder.Services.AddScoped<ILogicaJugador, UsuarioLogica>();
 

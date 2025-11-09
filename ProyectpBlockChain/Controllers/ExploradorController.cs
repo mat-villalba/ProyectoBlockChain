@@ -2,7 +2,7 @@
 
 namespace ProyectoBlockChain.Web.Controllers
 {
-    public class InicioController : Controller
+    public class ExploradorController : Controller
     {
         public IActionResult Index()
         {

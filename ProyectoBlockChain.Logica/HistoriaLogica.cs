@@ -14,15 +14,23 @@ namespace ProyectoBlockChain.Logica
 {
     public class HistoriaLogica : ILogicaHistorial
     {
-        private readonly IWeb3 _web3;
         private readonly Contract _contrato;
 
-        public HistoriaLogica(IWeb3 web3, IConfiguration config)
+        public HistoriaLogica()
         {
-            _web3 = web3;
-            string contractAddress = config["BlockchainSettings:ContractAddress"];
-            string abi = config["BlockchainSettings:ContractAbi"];
-            _contrato = _web3.Eth.GetContract(abi, contractAddress);
+            // Lee la configuración directamente desde appsettings.json
+            var json = System.IO.File.ReadAllText("appsettings.json");
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var blockchainSection = doc.RootElement.GetProperty("BlockchainSettings");
+
+            string nodeUrl = blockchainSection.GetProperty("NodeUrl").GetString();
+            string contractAddress = blockchainSection.GetProperty("ContractAddress").GetString();
+            string abi = blockchainSection.GetProperty("ContractAbi").GetRawText();
+
+            // Crea instancia de Web3 solo para lectura
+            var web3 = new Web3(nodeUrl);
+
+            _contrato = web3.Eth.GetContract(abi, contractAddress);
         }
 
         public async Task<List<DecisionDTO>> ObtenerHistorialBlockchain(BigInteger partidaId)
