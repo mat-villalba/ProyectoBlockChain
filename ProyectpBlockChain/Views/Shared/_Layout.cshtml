@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - practica</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <a asp-area="" asp-controller="Inicio" asp-action="Index"><img src="~/logito.png" alt="Logo" /></a>
+        <nav>
+            <a asp-area="" asp-controller="Inicio" asp-action="Login">Iniciar Sesión</a>
+            <a asp-area="" asp-controller="Inicio" asp-action="Register">Registrarse</a>
+        </nav>
+    </header>
+    <div>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+    <footer>
+        <div class="footer-links">
+            <a href="#">Sobre Nosotros</a>
+            <a href="#">Servicios</a>
+            <a href="#">Contacto</a>
+            <a href="#">Política de Privacidad</a>
+        </div>
+        <p>&copy; 2025 Tp Progra Web 2</p>
+    </footer>
+</body>
+</html>

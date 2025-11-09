@@ -1,0 +1,35 @@
+﻿form .recu {
+    font-size: 300;
+    color: #1F7D53;
+}
+
+form .opciones {
+    display: flex;
+    flex-direction: column;
+}
+
+form .opciones a {
+    text-align: center;
+    margin-top: 0.5em;
+}
+
+form .opciones a:hover {
+    color: #27391C;
+    cursor: pointer;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .form-wrapper {
+        padding: 1.5rem;
+    }
+}

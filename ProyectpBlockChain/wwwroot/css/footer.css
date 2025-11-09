@@ -1,0 +1,47 @@
+﻿footer {
+    background-color: #18230F;
+    color: #1F7D53;
+    text-align: center;
+    padding: 1.5em;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+    footer .footer-links {
+        display: flex;
+        gap: 1.2em;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    footer a {
+        color: #1F7D53;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 0.4em 1em;
+        transition: all 0.3s ease;
+    }
+
+        footer a:hover {
+            transform: scale(1.01);
+        }
+
+    footer p {
+        margin: 0;
+        font-size: 0.9em;
+        opacity: 0.85;
+    }
+
+@media (max-width: 700px) {
+    footer {
+        padding: 1em;
+    }
+
+        footer .footer-links {
+            flex-direction: column;
+            gap: 0.3em;
+        }
+}
