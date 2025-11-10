@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Nethereum.Web3.Accounts;
 using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica;
@@ -17,10 +16,10 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Registrar el DbContext (Conexión a PostgreSQL en Render)
+// Configuración para MySQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AventuraBlockchainDbContext>(options =>
-    options.UseNpgsql(connectionString)
+    options.UseSqlServer(connectionString) 
 );
 
 // Registrar Nethereum (Conexión a la Blockchain)
@@ -55,6 +54,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseRouting();
 

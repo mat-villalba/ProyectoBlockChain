@@ -2,7 +2,7 @@
 using ProyectoBlockChain.Logica.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,22 +22,31 @@ namespace ProyectoBlockChain.Logica
 
         public async Task<bool> ExisteJugador(string walletAddress)
         {
+            // debe devolver true si existe un jugador con esa walletAddress
             string hashedWalletAddress = walletAddressHash(walletAddress);
 
-            return await _context.Jugadors.AnyAsync(j => j.ContrasenaHash == hashedWalletAddress);
+            bool existe = false;
+            Jugador jugadorBuscado =  await _context.Jugadors.FindAsync(hashedWalletAddress);
+            if (jugadorBuscado != null)
+            {
+                existe = true;
+                return existe;
+            }
+            return existe;
         }
 
         public async Task RegistrarJugador(string walletAddress, string nombreUsuario, string apellido, string correo)
         {
+
             if (await ExisteJugador(walletAddress))
             {
                 throw new Exception("Esta wallet ya está registrada.");
             }
-
             string hashedWalletAddress = walletAddressHash(walletAddress);
 
             var jugador = new Jugador
             {
+                Id= hashedWalletAddress,
                 Nombre = nombreUsuario,
                 Apellido = apellido,
                 Correo = correo,
@@ -51,9 +60,17 @@ namespace ProyectoBlockChain.Logica
 
         public async Task<Jugador> ObtenerJugador(string walletAddress, string correo)
         {
-            string hashedWalletAddress = walletAddressHash(walletAddress);
-            return await _context.Jugadors
-                .FirstOrDefaultAsync(j => j.ContrasenaHash == hashedWalletAddress && j.Correo == correo);
+
+            if (await ExisteJugador(walletAddress))
+            {
+                // si exite devuelve el jugador
+                string hashedWalletAddress = walletAddressHash(walletAddress);
+                var jugador = await _context.Jugadors
+                    .Where(j => j.ContrasenaHash == hashedWalletAddress && j.Correo == correo)
+                    .FirstOrDefaultAsync();
+                return jugador;
+            }
+            return null;
         }
 
         public string walletAddressHash(string walletAddress)

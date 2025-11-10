@@ -3,13 +3,12 @@
     ViewData["Title"] = "Registro de Jugador";
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center text-white">
     <div class="col-md-6">
-        <h2 class="text-center">Registro de Nuevo Jugador</h2>
+        <h2 class="text-center ">Registro de Nuevo Jugador</h2>
         <p class="text-center text-muted">Conecta tu wallet y completa tus datos para registrarte.</p>
         <hr />
 
-        <!-- Mostrar errores de TempData (si el registro falla) -->
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger" role="alert">

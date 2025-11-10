@@ -32,7 +32,7 @@ namespace ProyectoBlockChain.Web.Controllers
             try
             {
                 bool existe = await _jugadorLogica.ExisteJugador(model.ContrasenaHash);
-                if (existe)
+                if (!existe)
                 {
                     TempData["Error"] = "Esa Wallet ya está registrada. Intenta iniciar sesión.";
                     return View(model);
