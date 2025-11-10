@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica.Interfaces;
 using ProyectoBlockChain.Web.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace ProyectoBlockChain.Web.Controllers
 {
@@ -46,6 +47,7 @@ namespace ProyectoBlockChain.Web.Controllers
                 );
 
                 HttpContext.Session.SetString("UserName", model.Nombre);
+                HttpContext.Session.SetString("UserWalletAddress", model.ContrasenaHash);
                 TempData["Mensaje"] = "¡Registro exitoso!";
 
                 return RedirectToAction("Index", "Inicio");
@@ -59,16 +61,17 @@ namespace ProyectoBlockChain.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> IniciarSesion(InicioSesionViewModel inicioSesion)
+        public async Task<IActionResult> IniciarSesion(InicioSesionViewModel model)
         {
-            var jugador = await _jugadorLogica.ObtenerJugador(inicioSesion.ContrasenaHash, inicioSesion.Correo);
+            var jugador = await _jugadorLogica.ObtenerJugador(model.ContrasenaHash, model.Correo);
             if (jugador == null)
             {
                 TempData["Error"] = "Wallet o Correo incorrecto. Verifica tus datos.";
-                return View(inicioSesion);
+                return View(model);
             }
 
             HttpContext.Session.SetString("UserName", jugador.Nombre);
+            HttpContext.Session.SetString("UserWalletAddress", jugador.ContrasenaHash);
             return RedirectToAction("Index", "Inicio");
         }
 

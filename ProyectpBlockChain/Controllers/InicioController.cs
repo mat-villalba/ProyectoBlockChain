@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿    using Microsoft.AspNetCore.Mvc;
 
 namespace ProyectoBlockChain.Web.Controllers
 {
@@ -8,14 +8,16 @@ namespace ProyectoBlockChain.Web.Controllers
         public IActionResult Index()
         {
             string nombreUsuario = HttpContext.Session.GetString("UserName");
+            string walletUsuario = HttpContext.Session.GetString("UserWalletAddress");
 
-            if (string.IsNullOrEmpty(nombreUsuario))
+            if (string.IsNullOrEmpty(walletUsuario) || string.IsNullOrEmpty(nombreUsuario))
             {
                 TempData["Error"] = "Por favor, inicia sesión para continuar.";
                 return RedirectToAction("IniciarSesion", "Jugador");
             }
-
             ViewData["NombreUsuario"] = nombreUsuario;
+            ViewData["WalletUsuario"] = walletUsuario;
+
             return View(); 
         }
     }
