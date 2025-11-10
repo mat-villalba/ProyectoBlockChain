@@ -4,6 +4,7 @@ using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica.Interfaces;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Numerics;
@@ -18,6 +19,7 @@ namespace ProyectoBlockChain.Logica
         private readonly string _cuentaBackendAddress;
         private readonly Account _cuentaBackend;
         private readonly EstadoGlobal _estadoGlobal;
+        private Random _random = new Random();
 
         public JuegoLogica(AventuraBlockchainDbContext context, IConfiguration config, IWeb3 web3, Account cuentaBackend, EstadoGlobal estadoGlobal)
         {
@@ -184,11 +186,9 @@ namespace ProyectoBlockChain.Logica
             int votosB = conteo["Opcion2"];
 
             string opcionGanadora;
-            bool desempate = false;
-            int? proximoCapituloId;
 
             // logica de Desempate
-            desempate = desempatar(capituloActual, votosA, votosB, out opcionGanadora, desempate, out proximoCapituloId);
+            ResultadoVotacion resultado = DeterminarGanador(capituloActual, votosA, votosB);
 
             // registrar decision en Blockchain 
             var idPartidaBlockchain = BigInteger.Parse(partidaDB.HashPrimerBloque);
@@ -200,10 +200,10 @@ namespace ProyectoBlockChain.Logica
                     _cuentaBackend.Address, null, null, null,
                     idPartidaBlockchain,
                     (BigInteger)capituloActual.Id,
-                    opcionGanadora,
-                    (BigInteger)votosA,
-                    (BigInteger)votosB,
-                    desempate
+                    resultado.OpcionGanadora,
+                    (BigInteger)resultado.VotosA,
+                    (BigInteger)resultado.VotosB,
+                    resultado.HuboDesempate
                 );
             }
             catch (Exception ex)
@@ -214,7 +214,7 @@ namespace ProyectoBlockChain.Logica
             }
 
             // una vez registrado --> avanzar al Siguiente Capítulo 
-            int proximoIdReal = capituloActual.Id;
+            int proximoIdReal = resultado.ProximoCapituloId ?? capituloActual.Id;
             estadoPartida.AvanzarCapitulo(proximoIdReal);
 
             // Actualizar la DB con el nuevo estado
@@ -238,35 +238,54 @@ namespace ProyectoBlockChain.Logica
 
             return new Dictionary<string, int> { { "Opcion1", votosA }, { "Opcion2", votosB } };
         }
-        private static bool desempatar(Capitulo capituloActual, int votosA, int votosB, out string opcionGanadora, bool desempate, out int? proximoCapituloId)
+        private ResultadoVotacion DeterminarGanador(Capitulo capituloActual, int votosA, int votosB)
         {
+            bool elegirOpcion1;
+            bool desempate = false;
+
             if (votosA > votosB)
             {
-                opcionGanadora = "Opcion1";
-                proximoCapituloId = capituloActual.IdOpcion1;
+                elegirOpcion1 = true;
             }
             else if (votosB > votosA)
             {
-                opcionGanadora = "Opcion2";
-                proximoCapituloId = capituloActual.IdOpcion2;
+                elegirOpcion1 = false;
+            }
+            else // Empate
+            {
+                desempate = true;
+                elegirOpcion1 = (_random.Next(0, 2) == 0);
+            }
+
+            var resultado = new ResultadoVotacion
+            {
+                HuboDesempate = desempate,
+                VotosA = votosA,
+                VotosB = votosB
+            };
+
+            if (elegirOpcion1)
+            {
+                resultado.OpcionGanadora = "Opcion1";
+                resultado.ProximoCapituloId = capituloActual.IdOpcion1;
             }
             else
             {
-                desempate = true;
-                if (new Random().Next(0, 2) == 0)
-                {
-                    opcionGanadora = "Opcion1";
-                    proximoCapituloId = capituloActual.IdOpcion1;
-                }
-                else
-                {
-                    opcionGanadora = "Opcion2";
-                    proximoCapituloId = capituloActual.IdOpcion2;
-                }
+                resultado.OpcionGanadora = "Opcion2";
+                resultado.ProximoCapituloId = capituloActual.IdOpcion2;
             }
 
-            return desempate;
+            return resultado;
         }
 
+        // (Definición interna del objeto de resultado)
+        private class ResultadoVotacion
+        {
+            public string OpcionGanadora { get; set; }
+            public int? ProximoCapituloId { get; set; }
+            public bool HuboDesempate { get; set; }
+            public int VotosA { get; set; }
+            public int VotosB { get; set; }
+        }
     }
 }

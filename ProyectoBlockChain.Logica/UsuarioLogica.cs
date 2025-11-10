@@ -49,6 +49,13 @@ namespace ProyectoBlockChain.Logica
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Jugador> ObtenerJugador(string walletAddress, string correo)
+        {
+            string hashedWalletAddress = walletAddressHash(walletAddress);
+            return await _context.Jugadors
+                .FirstOrDefaultAsync(j => j.ContrasenaHash == hashedWalletAddress && j.Correo == correo);
+        }
+
         public string walletAddressHash(string walletAddress)
         {
             // Usamos SHA-256 para generar el hash de la walletAddress

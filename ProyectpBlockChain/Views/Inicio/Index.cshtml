@@ -1,4 +1,57 @@
-﻿@*
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Lobby Principal";
+    var nombreUsuario = ViewData["NombreUsuario"] as string;
+}
+
+<div class="text-center">
+    <h1 class="display-4">¡Bienvenido, @nombreUsuario!</h1>
+    <p class="lead">Estás en el lobby de "Aventura Interactiva con Blockchain".</p>
+</div>
+<hr />
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<div class="container mt-4">
+    <div class="row justify-content-center g-3">
+
+        <!-- Botón para Jugar (Crear Partida) -->
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Jugar</h5>
+                    <p class="card-text">Inicia una nueva aventura y sé el anfitrión de la partida. Otros podrán unirse a tu juego.</p>
+                    <button id="btnCrearPartida" class="btn btn-primary btn-lg">Crear Nueva Partida</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para Ver Historial -->
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Ver Historial</h5>
+                    <p class="card-text">Revisa las aventuras pasadas y consulta el historial inmutable de decisiones en la Blockchain.</p>
+                    <a asp-controller="Juego" asp-action="Historial" class="btn btn-outline-secondary btn-lg">Ver Historial de Partidas</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 }

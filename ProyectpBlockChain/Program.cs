@@ -5,8 +5,17 @@ using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica;
 using Nethereum.Web3;
 using ProyectoBlockChain.Logica.Interfaces;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDistributedMemoryCache(); // Almacenamiento en memoria para la sesión
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de inactividad
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Registrar el DbContext (Conexión a PostgreSQL en Render)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -53,9 +62,11 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Inicio}/{action=Index}/{id?}")
+    pattern: "{controller=Jugador}/{action=IniciarSesion}/{id?}")
     .WithStaticAssets();
 
 
