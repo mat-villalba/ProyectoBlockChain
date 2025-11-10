@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using ProyectoBlockChain.Data.Data;
+using ProyectoBlockChain.Logica.Interfaces;
 using System.Text.Json;
 
 namespace ProyectoBlockChain.Web.Controllers
@@ -9,20 +10,37 @@ namespace ProyectoBlockChain.Web.Controllers
     public class JuegoController : Controller
     {
         private readonly BlockchainSettings _blockchainSettings;
-        public JuegoController(IOptions<BlockchainSettings> blockchainOptions)
+        private readonly ILogicaDeJuego _logicaJuego;
+
+        public JuegoController(ILogicaDeJuego LogicaDeJuego, IOptions<BlockchainSettings> blockchainOptions)
         {
+            _logicaJuego = LogicaDeJuego;
             _blockchainSettings = blockchainOptions.Value;
         }
-        public IActionResult Jugar(int partidaId = 1, int capituloId = 1)
-        {
-            var abiPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "abi", "Contrato.json");
-            var abi = System.IO.File.ReadAllText(abiPath);
 
-            ViewBag.ContractAddress = _blockchainSettings.ContractAddress;
-            ViewBag.ContractAbi = abi;
+        public async Task<IActionResult> Jugar()
+        {
+            Console.WriteLine($"PrivateKey: {_blockchainSettings.BackendPrivateKey}");
+
+            var partidaId = await _logicaJuego.IniciarNuevaPartida(
+            _blockchainSettings.NodeUrl,
+            _blockchainSettings.BackendPrivateKey,
+            _blockchainSettings.ContractAddress,
+            _blockchainSettings.ContractAbi
+            );
+
             ViewBag.PartidaId = partidaId;
-            ViewBag.CapituloId = capituloId;
+            ViewBag.CapituloId = 1;
+            ViewBag.ContractAddress = _blockchainSettings.ContractAddress;
+
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult ObtenerEstadoRonda(int partidaId)
+        {
+            var estado = _logicaJuego.ObtenerEstadoRonda(partidaId);
+            return Json(estado);
         }
         public IActionResult FinalizarVotacion()
         {

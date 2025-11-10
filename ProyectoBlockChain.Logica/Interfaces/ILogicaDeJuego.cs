@@ -1,5 +1,6 @@
 ﻿using ProyectoBlockChain.Data.Data;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace ProyectoBlockChain.Logica.Interfaces
@@ -9,6 +10,10 @@ namespace ProyectoBlockChain.Logica.Interfaces
     /// </summary>
     public interface ILogicaDeJuego
     {
+        Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string privateKey, string contractAddress, string contractAbi);
+        EstadoRonda ObtenerEstadoRonda(int partidaId);
+
+        /*
         /// <summary>
         /// Almacena el voto de un jugador (off-chain) en la base de datos
         /// para la ronda actual.
@@ -44,5 +49,6 @@ namespace ProyectoBlockChain.Logica.Interfaces
         /// Puede ser usado por FinalizarRonda
         /// </summary>
         Task<Dictionary<string, int>> ObtenerConteoVotos(int partidaId, int capituloId);
+        */
     }
 }

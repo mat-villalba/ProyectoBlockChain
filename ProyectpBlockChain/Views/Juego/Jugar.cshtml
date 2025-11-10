@@ -1,12 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "Probar firma (sin gas)";
-    // Valores de ejemplo que podés pasar desde el controlador
+    ViewData["Title"] = "Votar historia";
     var partidaId = ViewBag.PartidaId ?? 1;
     var capituloId = ViewBag.CapituloId ?? 1;
 }
 
-<h2>Prueba de firma (sin enviar transacción)</h2>
-<p>Partida: <strong></strong> — Capítulo: <strong></strong></p>
+<h2>Votar historia</h2>
+<p>Partida: <strong>@partidaId</strong> — Capítulo: <strong>@capituloId</strong></p>
 
 <div style="margin-top:20px;">
     <button id="btnA">Votar Opción A</button>
@@ -18,82 +17,49 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
-    (async () => {
-        const statusEl = document.getElementById('status');
-        const outEl = document.getElementById('out');
-        const btnA = document.getElementById('btnA');
-        const btnB = document.getElementById('btnB');
+(async () => {
+    const statusEl = document.getElementById('status');
+    const outEl = document.getElementById('out');
+    const btnA = document.getElementById('btnA');
+    const btnB = document.getElementById('btnB');
 
-        const partidaId = @partidaId;
-        const capituloId = @capituloId;
+    const partidaId = @partidaId;
+    const capituloId = @capituloId;
+    const CONTRACT_ADDRESS = "@ViewBag.ContractAddress";
+    const CONTRACT_ABI = await fetch('/abi/Contrato.json').then(r => r.json());
 
-        const CONTRACT_ADDRESS = "@ViewBag.ContractAddress";
-        const CONTRACT_ABI = JSON.parse(`@Html.Raw(ViewBag.ContractAbi.Replace("`", "\\`"))`);
+    function show(msg) { statusEl.innerText = msg; }
+    function log(o) { outEl.innerText = JSON.stringify(o, null, 2); }
 
-            console.log("✅ Dirección del contrato:", CONTRACT_ADDRESS);
-            console.log("✅ ABI cargado:", CONTRACT_ABI);
-
-        function show(msg) { statusEl.innerText = msg; }
-        function log(o) { outEl.innerText = JSON.stringify(o, null, 2); }
-
-        async function ensureProvider() {
-            if (typeof window.ethereum === 'undefined') {
-                alert('No se detectó MetaMask. Instalá la extensión para continuar.');
-                throw new Error('No MetaMask');
-            }
-
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send('eth_requestAccounts', []); // pide conexión si no está
-            return provider;
+    async function ensureProvider() {
+        if (!window.ethereum) {
+            alert('No se detectó MetaMask.');
+            throw new Error('MetaMask no detectado');
         }
-            console.log("Votando con:", {
-        partidaId: Number(partidaId),
-        capituloId: Number(capituloId),
-        opcionElegida
-    });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send('eth_requestAccounts', []);
+        return provider;
+    }
 
-                async function vote(opcion) {
+    async function vote(opcion) {
         try {
-            show('Conectando a MetaMask...');
             const provider = await ensureProvider();
             const signer = provider.getSigner();
-            const address = await signer.getAddress();
-
             const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-            const opcionElegida = opcion === 'A' ? "A" : "B";
-
-            // 🔹 Log de depuración aquí, donde opcionElegida ya existe
-            console.log("Votando con:", {
-                partidaId: Number(partidaId),
-                capituloId: Number(capituloId),
-                opcionElegida
-            });
-
-            show(`Enviando transacción para votar "${opcion}"...`);
-            const tx = await contract.votar(
-                Number(partidaId),
-                Number(capituloId),
-                opcionElegida,
-                { gasLimit: 300000 }
-            );
-
-            show('Transacción enviada, esperando confirmación...');
+            show(`Votando opción ${opcion}...`);
+            const tx = await contract.votar(partidaId, capituloId, opcion, { gasLimit: 300000 });
+            show('Esperando confirmación...');
             const receipt = await tx.wait();
             show('✅ Voto registrado en blockchain');
             log(receipt);
-
-        } catch (err) {
-            console.error('Error al llamar al contrato:', err);
-            show('❌ Ocurrió un error. Revisa la consola.');
+        } catch(err) {
+            console.error(err);
+            show('❌ Error al votar. Revisá la consola.');
         }
     }
 
-    }
-
-
-        // Escuchar botones
-        btnA.addEventListener('click', () => vote('A'));
-        btnB.addEventListener('click', () => vote('B'));
-    })();
+    btnA.addEventListener('click', () => vote('A'));
+    btnB.addEventListener('click', () => vote('B'));
+})();
 </script>

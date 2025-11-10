@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
@@ -10,29 +10,48 @@ using ProyectoBlockChain.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar el DbContext (Conexi�n a PostgreSQL en Render)
+// Registrar el DbContext (Conexión a PostgreSQL en Render)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AventuraBlockchainDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
-// Registrar la configuraci�n de blockchain
-builder.Services.Configure<BlockchainSettings>(
-    builder.Configuration.GetSection("BlockchainSettings"));
 
-// Web3 solo si necesit�s hacer llamadas de lectura desde el backend
+// Cargar la sección BlockchainSettings
+var blockchainSettingsSection = builder.Configuration.GetSection("BlockchainSettings");
+var blockchainSettings = blockchainSettingsSection.Get<BlockchainSettings>() ?? new BlockchainSettings();
+
+// Leer el archivo ABI (si existe)
+if (!string.IsNullOrEmpty(blockchainSettings.ContractAbi))
+{
+    var abiPath = Path.Combine(AppContext.BaseDirectory, blockchainSettings.ContractAbi);
+    if (File.Exists(abiPath))
+    {
+        var abi = File.ReadAllText(abiPath);
+        blockchainSettings.ContractAbi = abi.Replace("\"", "\\\"");
+    }
+    else
+    {
+        Console.WriteLine($"⚠️ No se encontró el archivo ABI en {abiPath}");
+    }
+}
+
+// Registrar BlockchainSettings como singleton con los valores ya cargados
+builder.Services.AddSingleton(blockchainSettings);
+
+// Si necesitás un Web3 para lecturas
 builder.Services.AddSingleton(provider =>
 {
-    var blockchainSettings = provider.GetRequiredService<IOptions<BlockchainSettings>>().Value;
-    return new Web3(blockchainSettings.NodeUrl); // Solo lectura
+    return new Web3(blockchainSettings.NodeUrl);
 });
 
-/*builder.Services.AddScoped<JuegoLogica>();*/
+
+builder.Services.AddScoped<JuegoLogica>();
 builder.Services.AddScoped<HistoriaLogica>();
 builder.Services.AddScoped<UsuarioLogica>();
 builder.Services.AddSingleton<EstadoGlobal>();
 
-/*builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();*/
+builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();
 builder.Services.AddScoped<ILogicaHistorial, HistoriaLogica>();
 builder.Services.AddScoped<ILogicaJugador, UsuarioLogica>();
 

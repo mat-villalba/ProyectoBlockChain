@@ -8,6 +8,8 @@
 
         public string ContractAbi { get; set; } = string.Empty;
 
+        public string BackendPrivateKey { get; set; } = string.Empty;
+
     }
 
 }
