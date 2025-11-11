@@ -27,8 +27,8 @@ if (!string.IsNullOrEmpty(blockchainSettings.ContractAbi))
     var abiPath = Path.Combine(AppContext.BaseDirectory, blockchainSettings.ContractAbi);
     if (File.Exists(abiPath))
     {
-        var abi = File.ReadAllText(abiPath);
-        blockchainSettings.ContractAbi = abi.Replace("\"", "\\\"");
+        var abi = File.ReadAllText(blockchainSettings.ContractAbi);
+        blockchainSettings.ContractAbi = abi;
     }
     else
     {

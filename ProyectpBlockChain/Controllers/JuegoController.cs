@@ -12,10 +12,10 @@ namespace ProyectoBlockChain.Web.Controllers
         private readonly BlockchainSettings _blockchainSettings;
         private readonly ILogicaDeJuego _logicaJuego;
 
-        public JuegoController(ILogicaDeJuego LogicaDeJuego, IOptions<BlockchainSettings> blockchainOptions)
+        public JuegoController(ILogicaDeJuego LogicaDeJuego, BlockchainSettings blockchainOptions)
         {
             _logicaJuego = LogicaDeJuego;
-            _blockchainSettings = blockchainOptions.Value;
+            _blockchainSettings = blockchainOptions;
         }
 
         public async Task<IActionResult> Jugar()

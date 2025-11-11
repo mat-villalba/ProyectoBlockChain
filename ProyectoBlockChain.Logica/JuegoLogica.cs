@@ -36,12 +36,19 @@ namespace ProyectoBlockChain.Logica
             Console.WriteLine(contractAbi.Substring(0, 100));
 
             var funcion = contrato.GetFunction("iniciarNuevaPartida");
-            var receipt = await funcion.SendTransactionAndWaitForReceiptAsync(account.Address);
+            var gas = new Nethereum.Hex.HexTypes.HexBigInteger(300000);
+
+            var receipt = await funcion.SendTransactionAndWaitForReceiptAsync(
+                account.Address,
+                gas,
+                null,
+                null 
+            );
 
             var funcionId = contrato.GetFunction("proximaPartidaId");
-            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>()) - 1;
+            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>());
 
-            return idPartidaBlockchain;
+            return idPartidaBlockchain -1;
         }
 
 
