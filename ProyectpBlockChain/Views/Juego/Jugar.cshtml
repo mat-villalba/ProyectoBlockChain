@@ -18,11 +18,14 @@
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
 (async () => {
+
+    // el jugador vota desde el navegador usando MetaMask
     const statusEl = document.getElementById('status');
     const outEl = document.getElementById('out');
     const btnA = document.getElementById('btnA');
     const btnB = document.getElementById('btnB');
 
+    // qué contrato conectarse y con qué datos
     const partidaId = @partidaId;
     const capituloId = @capituloId;
     const CONTRACT_ADDRESS = "@ViewBag.ContractAddress";
@@ -31,6 +34,9 @@
     function show(msg) { statusEl.innerText = msg; }
     function log(o) { outEl.innerText = JSON.stringify(o, null, 2); }
 
+        // Comprueba que el usuario tenga MetaMask
+        // Pide permiso para acceder a su cuenta
+        // Devuelve un provider, que permite comunicarse con la blockchain desde el navegador.
     async function ensureProvider() {
         if (!window.ethereum) {
             alert('No se detectó MetaMask.');
@@ -41,10 +47,11 @@
         return provider;
     }
 
+    // cada jugador firma y paga su propia transacción de voto
     async function vote(opcion) {
         try {
             const provider = await ensureProvider();
-            const signer = provider.getSigner();
+            const signer = provider.getSigner(); // cuenta del jugador
             const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
             show(`Votando opción ${opcion}...`);
