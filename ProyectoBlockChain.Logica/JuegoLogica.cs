@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts;
+using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using ProyectoBlockChain.Data.Data;
@@ -12,60 +13,40 @@ using System.Numerics;
 
 namespace ProyectoBlockChain.Logica
 {
-  public class JuegoLogica : ILogicaDeJuego
-  {
+    public class JuegoLogica : ILogicaDeJuego
+    {
 
         private readonly Web3 _web3;
         private readonly Contract _contrato;
-        string privateKey = "0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e";
-        string nodeUrl = "http://127.0.0.1:8545";
-        private readonly Account _backendAccount;
-        // Estado temporal en memoria
-        private static readonly ConcurrentDictionary<int, EstadoRonda> _estadoRondas = new();
 
         public JuegoLogica()
         {
         }
 
         // Inicia nueva partida y devuelve el ID
-        public async Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string privateKey, string contractAddress, string contractAbi)
+        public async Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi)
         {
-            var account = new Account(privateKey);
+            //el backend usará la cuenta 0 de Hardhat 
+            var account = new Account(backendPrivateKey);
             var web3 = new Web3(account, nodeUrl);
-            var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
-            Console.WriteLine(contractAbi.Substring(0, 100));
 
             var funcion = contrato.GetFunction("iniciarNuevaPartida");
-            var gas = new Nethereum.Hex.HexTypes.HexBigInteger(300000);
+            var gas = new HexBigInteger(300000);
 
             var receipt = await funcion.SendTransactionAndWaitForReceiptAsync(
                 account.Address,
                 gas,
                 null,
-                null 
+                null
             );
 
             var funcionId = contrato.GetFunction("proximaPartidaId");
-            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>());
+            var idPartidaBlockchain = await funcionId.CallAsync<BigInteger>();
 
-            return idPartidaBlockchain -1;
+            return idPartidaBlockchain - 1;
         }
-
-
-        // Devuelve estado de la ronda actual
-        public EstadoRonda ObtenerEstadoRonda(int partidaId)
-        {
-            return _estadoRondas.GetValueOrDefault(partidaId);
-        }
-
     }
 
-    public class EstadoRonda
-    {
-        public int CapituloActual { get; set; }
-        public DateTime InicioRonda { get; set; }
-        public bool RondaActiva { get; set; }
-    }
     /*  private readonly AventuraBlockchainDbContext _context;
       private readonly Web3 _web3;
       private readonly Contract _contrato;

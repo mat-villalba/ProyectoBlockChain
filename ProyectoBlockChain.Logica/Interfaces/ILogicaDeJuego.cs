@@ -10,8 +10,7 @@ namespace ProyectoBlockChain.Logica.Interfaces
     /// </summary>
     public interface ILogicaDeJuego
     {
-        Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string privateKey, string contractAddress, string contractAbi);
-        EstadoRonda ObtenerEstadoRonda(int partidaId);
+        Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi);
 
         /*
         /// <summary>

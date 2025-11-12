@@ -1,5 +1,36 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@using ProyectoBlockChain.Logica.Core
+
+@model List<VotoDTO>
+
+<h2>🗳️ Explorador de Votos en la Blockchain</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No hay votos registrados todavía.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Partida</th>
+                <th>Jugador</th>
+                <th>Capítulo</th>
+                <th>Opción Elegida</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var voto in Model)
+            {
+                <tr>
+                    <td>@voto.PartidaId</td>
+                    <td>@voto.Jugador</td>
+                    <td>@voto.CapituloId</td>
+                    <td>@voto.OpcionElegida</td>
+                    <td>@DateTimeOffset.FromUnixTimeSeconds((long)voto.Timestamp).ToLocalTime()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }

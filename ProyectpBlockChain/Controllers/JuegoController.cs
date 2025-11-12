@@ -20,13 +20,11 @@ namespace ProyectoBlockChain.Web.Controllers
 
         public async Task<IActionResult> Jugar()
         {
-            Console.WriteLine($"PrivateKey: {_blockchainSettings.BackendPrivateKey}");
-
             var partidaId = await _logicaJuego.IniciarNuevaPartida(
-            _blockchainSettings.NodeUrl,
-            _blockchainSettings.BackendPrivateKey,
-            _blockchainSettings.ContractAddress,
-            _blockchainSettings.ContractAbi
+                _blockchainSettings.NodeUrl,
+                _blockchainSettings.BackendPrivateKey,
+                _blockchainSettings.ContractAddress,
+                _blockchainSettings.ContractAbi
             );
 
             ViewBag.PartidaId = partidaId;
@@ -34,13 +32,6 @@ namespace ProyectoBlockChain.Web.Controllers
             ViewBag.ContractAddress = _blockchainSettings.ContractAddress;
 
             return View();
-        }
-
-        [HttpGet]
-        public IActionResult ObtenerEstadoRonda(int partidaId)
-        {
-            var estado = _logicaJuego.ObtenerEstadoRonda(partidaId);
-            return Json(estado);
         }
         public IActionResult FinalizarVotacion()
         {
