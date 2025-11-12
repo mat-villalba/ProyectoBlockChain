@@ -27,14 +27,21 @@ namespace ProyectoBlockChain.Logica
         // Inicia nueva partida y devuelve el ID
         public async Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string contractAddress, string contractAbi)
         {
-            //el backend usará la cuenta 0 de Hardhat 
+            // Obtenemos la cuenta local del nodo Hardhat
             var account = await HardhatHelper.GetAccountAsync(nodeUrl);
             var web3 = new Web3(account, nodeUrl);
 
-            // obtenemos el contrato y funcion
+            // Cargamos el contrato en la blockchain
             var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
+
+            Console.WriteLine($"Usando cuenta: {account.Address}");
+            Console.WriteLine($"Contrato en: {contractAddress}");
+
+            // Ejecutamos la función para iniciar la partida
             var funcion = contrato.GetFunction("iniciarNuevaPartida");
             var gas = new Nethereum.Hex.HexTypes.HexBigInteger(300000);
+
+            Console.WriteLine($"Ejecutando iniciarNuevaPartida()...");
 
             var receipt = await funcion.SendTransactionAndWaitForReceiptAsync(
                 account.Address,
@@ -43,12 +50,17 @@ namespace ProyectoBlockChain.Logica
                 null
             );
 
-            var funcionId = contrato.GetFunction("proximaPartidaId");
-            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>());
+            Console.WriteLine($"Transacción completada. Hash: {receipt.TransactionHash}");
 
+            // Consultamos el nuevo valor de proximaPartidaId
+            var funcionId = contrato.GetFunction("proximaPartidaId");
+            var idPartidaBlockchain = await funcionId.CallAsync<BigInteger>();
+
+            Console.WriteLine($"proximaPartidaId actual en blockchain: {idPartidaBlockchain}");
+
+            // Retornamos el ID de la partida recién creada
             return idPartidaBlockchain - 1;
         }
-
 
         // Devuelve estado de la ronda actual
         public EstadoRonda ObtenerEstadoRonda(int partidaId)

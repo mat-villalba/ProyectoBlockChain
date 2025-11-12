@@ -13,13 +13,10 @@ public static class HardhatHelper
         // Pedimos las cuentas locales (20 por defecto)
         var accounts = await web3.Eth.Accounts.SendRequestAsync();
 
-        // Usamos la primera cuenta
-        var localAccountAddress = accounts.First();
+        // Usamos la cuenta 0 (owner del contrato)
+        var localPrivateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
-        // Esta private key corresponde a la cuenta (0) del nodo local.
-        var localPrivateKey = "0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e";
-
-        Console.WriteLine($"Usando cuenta local de Hardhat: {localAccountAddress}");
+        Console.WriteLine($"Usando cuenta local de Hardhat: {accounts.First()}");
 
         return new Account(localPrivateKey);
     }
