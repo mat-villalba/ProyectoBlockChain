@@ -26,10 +26,11 @@ namespace ProyectoBlockChain.Logica
         // Inicia nueva partida y devuelve el ID
         public async Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi)
         {
-            //el backend usará la cuenta 0 de Hardhat 
+            //el backend usará la cuenta del "host" para pagar el gas
             var account = new Account(backendPrivateKey);
             var web3 = new Web3(account, nodeUrl);
 
+            var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
             var funcion = contrato.GetFunction("iniciarNuevaPartida");
             var gas = new HexBigInteger(300000);
 
