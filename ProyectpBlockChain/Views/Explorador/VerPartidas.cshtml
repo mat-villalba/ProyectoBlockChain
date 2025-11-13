@@ -1,5 +1,31 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<ProyectoBlockChain.Logica.Core.DecisionDTO>
+
+<h2>Decisiones finales registradas</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Partida</th>
+            <th>Capítulo</th>
+            <th>Ganadora</th>
+            <th>Votos A</th>
+            <th>Votos B</th>
+            <th>Desempate</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.PartidaId</td> 
+                <td>@d.CapituloId</td>
+                <td>@d.OpcionGanadora</td>
+                <td>@d.VotosOpcionA</td>
+                <td>@d.VotosOpcionB</td>
+                <td>@(d.DesempateAplicado ? "Sí" : "No")</td>
+                <td>@DateTimeOffset.FromUnixTimeSeconds((long)d.Timestamp).ToLocalTime()</td>
+            </tr>
+        }
+    </tbody>
+</table>

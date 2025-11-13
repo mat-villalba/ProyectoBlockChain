@@ -26,5 +26,15 @@ namespace ProyectoBlockChain.Web.Controllers
 
             return View(votos);
         }
+        public async Task<IActionResult> VerPartidas()
+        {
+            var partidas = await _logicaExplorador.ObtenerDecisionesFinales(
+                _blockchainSettings.NodeUrl,
+                _blockchainSettings.ContractAddress,
+                _blockchainSettings.ContractAbi
+                );
+
+            return View(partidas);
+        }
     }
 }

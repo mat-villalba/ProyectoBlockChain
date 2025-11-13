@@ -35,6 +35,19 @@ namespace ProyectoBlockChain.Logica
 
             return votosTotales;
         }
+        public async Task<List<DecisionDTO>> ObtenerDecisionesFinales(string nodeUrl, string contractAddress, string contractAbi, BigInteger idPartida)
+        {
+            var web3 = new Web3(nodeUrl);
+            var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
+
+            var funcion = contrato.GetFunction("obtenerHistorialPartida");
+            var decisiones = await funcion.CallDeserializingToObjectAsync<List<DecisionDTO>>(idPartida);
+
+            foreach (var d in decisiones)
+                d.PartidaId = (int)idPartida;
+
+            return decisiones;
+        }
 
     }
 }

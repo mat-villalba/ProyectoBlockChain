@@ -1,1 +1,21 @@
-﻿
+﻿@model ProyectoBlockChain.Logica.Core.DecisionDTO
+
+@{
+    ViewData["Title"] = "Resultado Final de la Votación";
+}
+
+<div class="container mt-5">
+    <div class="card p-4 shadow-lg">
+        <h2 class="text-center mb-4">Resultado Final - Partida @Model.CapituloId</h2>
+
+        <p><strong>Capítulo ID:</strong> @Model.CapituloId</p>
+        <p><strong>Opción Ganadora:</strong> @Model.OpcionGanadora</p>
+        <p><strong>Votos A:</strong> @Model.VotosOpcionA</p>
+        <p><strong>Votos B:</strong> @Model.VotosOpcionB</p>
+        <p><strong>¿Desempate?:</strong> @(Model.DesempateAplicado ? "Sí" : "No")</p>
+        <p><strong>Registrado en blockchain:</strong> @DateTimeOffset.FromUnixTimeSeconds((long)Model.Timestamp).ToLocalTime()</p>
+        <p><strong>Tx Hash:</strong> @Model.TxHash</p>
+
+        <a asp-controller="Juego" asp-action="Jugar" class="btn btn-secondary mt-3">Continuar juego</a>
+    </div>
+</div>

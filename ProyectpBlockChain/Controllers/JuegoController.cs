@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica.Interfaces;
+using System.Numerics;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ProyectoBlockChain.Web.Controllers
 {
@@ -33,9 +35,16 @@ namespace ProyectoBlockChain.Web.Controllers
 
             return View();
         }
-        public IActionResult FinalizarVotacion()
+        public async Task<IActionResult> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo)
         {
-            return View();
+            var resultadoVotacion = await _logicaJuego.ResultadoVotacion(
+                _blockchainSettings.NodeUrl,
+                _blockchainSettings.BackendPrivateKey,
+                _blockchainSettings.ContractAddress,
+                _blockchainSettings.ContractAbi,
+                idPartida, idCapitulo);
+
+            return View(resultadoVotacion);
         }
         public IActionResult FinalizarJuego()
         {

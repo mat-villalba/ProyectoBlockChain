@@ -5,6 +5,7 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using ProyectoBlockChain.Data.Data;
+using ProyectoBlockChain.Logica.Core;
 using ProyectoBlockChain.Logica.Interfaces;
 using System.Collections.Concurrent;
 using System.Data.Entity;
@@ -29,8 +30,8 @@ namespace ProyectoBlockChain.Logica
             //el backend usará la cuenta del "host" para pagar el gas
             var account = new Account(backendPrivateKey);
             var web3 = new Web3(account, nodeUrl);
-
             var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
+
             var funcion = contrato.GetFunction("iniciarNuevaPartida");
             var gas = new HexBigInteger(300000);
 
@@ -46,7 +47,63 @@ namespace ProyectoBlockChain.Logica
 
             return idPartidaBlockchain - 1;
         }
-    }
+
+        public async Task<DecisionDTO> ResultadoVotacion(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi, BigInteger idPartida, BigInteger idCapitulo)
+        {
+            var account = new Account(backendPrivateKey);
+            var web3 = new Web3(account, nodeUrl);
+            var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
+
+            var funcionVotos = contrato.GetFunction("obtenerVotos");
+            var votos = await funcionVotos.CallDeserializingToObjectAsync<List<VotoDTO>>(idPartida);
+
+            var votosCapitulo = votos.Where(v => v.CapituloId == idCapitulo).ToList();
+
+            int votosA = votosCapitulo.Count(v => v.OpcionElegida == "A");
+            int votosB = votosCapitulo.Count(v => v.OpcionElegida == "B");
+
+            string opcionGanadora;
+            bool desempate = false;
+
+            // calcula ganador, si hay desempate es al azar
+            if (votosA > votosB) opcionGanadora = "A";
+            else if (votosB > votosA) opcionGanadora = "B";
+            else
+            {
+                if (new Random().Next(0, 2) == 0) opcionGanadora = "A";
+                else opcionGanadora = "B";
+                desempate = true;
+            }
+
+            // registrar decision final del capitulo en blockchain
+            var registrarDecision = contrato.GetFunction("registrarDecisionFinal");
+            var txHash = await registrarDecision.SendTransactionAsync(
+                account.Address,
+                new HexBigInteger(3000000),
+                null,
+                idPartida,
+                idCapitulo,
+                opcionGanadora,
+                votosA,
+                votosB,
+                desempate
+            );
+
+            // lee decisión final para mostrarla
+            var funcionHistorial = contrato.GetFunction("obtenerHistorial");
+            var historial = await funcionHistorial.CallDeserializingToObjectAsync<List<DecisionDTO>>(idPartida);
+            var ultimaDecision = historial.LastOrDefault(d => d.CapituloId == idCapitulo);
+
+            return ultimaDecision ?? new DecisionDTO
+            {
+                CapituloId = idCapitulo,
+                OpcionGanadora = opcionGanadora,
+                VotosOpcionA = votosA,
+                VotosOpcionB = votosB,
+                DesempateAplicado = desempate,
+                Timestamp = (BigInteger)DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            };
+        }
 
     /*  private readonly AventuraBlockchainDbContext _context;
       private readonly Web3 _web3;
