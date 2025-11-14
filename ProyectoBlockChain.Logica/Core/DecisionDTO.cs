@@ -32,5 +32,9 @@ namespace ProyectoBlockChain.Logica.Core
 
         [Parameter("uint256", "timestamp", 6)]
         public BigInteger Timestamp { get; set; }
+
+        // para logica en backend
+        public int PartidaId { get; set; }
+        public string TxHash { get; set; } // <-- Agregar esta propiedad para corregir CS1061
     }
 }
