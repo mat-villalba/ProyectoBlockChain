@@ -1,4 +1,5 @@
 ﻿using ProyectoBlockChain.Data.Data;
+using ProyectoBlockChain.Logica.Core;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace ProyectoBlockChain.Logica.Interfaces
     /// </summary>
     public interface ILogicaDeJuego
     {
-        Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string contractAddress, string contractAbi);
-        EstadoRonda ObtenerEstadoRonda(int partidaId);
+        Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi);
+        Task<DecisionDTO> ResultadoVotacion(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi, BigInteger idPartida, BigInteger idCapitulo);
 
         /*
         /// <summary>
