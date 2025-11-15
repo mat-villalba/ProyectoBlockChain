@@ -3,6 +3,7 @@ using Nethereum.ABI.Model;
 using Nethereum.Web3;
 using ProyectoBlockChain.Logica.Core;
 using ProyectoBlockChain.Logica.Interfaces;
+using System.Numerics;
 
 namespace ProyectoBlockChain.Web.Controllers
 {
@@ -26,12 +27,13 @@ namespace ProyectoBlockChain.Web.Controllers
 
             return View(votos);
         }
-        public async Task<IActionResult> VerPartidas()
+        public async Task<IActionResult> VerPartidas(BigInteger idPartida)
         {
             var partidas = await _logicaExplorador.ObtenerDecisionesFinales(
                 _blockchainSettings.NodeUrl,
                 _blockchainSettings.ContractAddress,
-                _blockchainSettings.ContractAbi
+                _blockchainSettings.ContractAbi,
+                idPartida
                 );
 
             return View(partidas);

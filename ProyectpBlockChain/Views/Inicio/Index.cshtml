@@ -1,9 +1,9 @@
-﻿<h1>Bienvenido al juego blockchain</h1>
+﻿﻿<h1>Bienvenido al juego blockchain</h1>
 <button id="connectWalletBtn">Conectar billetera</button>
 <p id="walletAddress"></p>
 
 <button id="startGameBtn" disabled>Comenzar juego</button>
-
+<a asp-controller="Explorador" asp-action="VerVotos">Ver votos registrados en la blockchain </a>
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
     let userAddress = null;

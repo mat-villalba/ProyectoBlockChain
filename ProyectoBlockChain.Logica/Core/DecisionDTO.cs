@@ -2,18 +2,11 @@
 using System.Numerics;
 
 namespace ProyectoBlockChain.Logica.Core
-{   // TPFInal-PWIII.Logica/Core/DecisionDTO.cs
-    /// <summary>
-    /// DTO (Data Transfer Object) que actúa como "molde" para que Nethereum 
-    /// pueda traducir (deserializar) la 'struct Decision' que devuelve 
-    /// el Smart Contract de Solidity (desde la función 'obtenerHistorialPartida').
-    /// </summary>
-    // [FunctionOutput] le dice a Nethereum que esta clase mapea un resultado
+{   
     [FunctionOutput]
-    public class DecisionDTO // accesible desde el JuegoLogica
+    public class DecisionDTO 
     {
-        // Los atributos [Parameter] deben coincidir EXACTAMENTE 
-        // con el orden y tipo del 'struct Decision' en Solidity.
+        // sirve para LEER decisiones ya registradas en el contrato
 
         [Parameter("uint256", "capituloId", 1)]
         public BigInteger CapituloId { get; set; }

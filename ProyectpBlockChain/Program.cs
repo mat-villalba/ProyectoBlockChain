@@ -49,11 +49,13 @@ builder.Services.AddSingleton(provider =>
 builder.Services.AddScoped<JuegoLogica>();
 builder.Services.AddScoped<HistoriaLogica>();
 builder.Services.AddScoped<UsuarioLogica>();
+builder.Services.AddScoped<ExploradorLogica>();
 builder.Services.AddSingleton<EstadoGlobal>();
 
 builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();
 builder.Services.AddScoped<ILogicaHistorial, HistoriaLogica>();
 builder.Services.AddScoped<ILogicaJugador, UsuarioLogica>();
+builder.Services.AddScoped<ILogicaExplorador, ExploradorLogica>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

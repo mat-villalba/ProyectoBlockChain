@@ -11,9 +11,8 @@ namespace ProyectoBlockChain.Logica.Interfaces
     /// </summary>
     public interface ILogicaDeJuego
     {
-        Task<BigInteger> IniciarNuevaPartida(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi);
-        Task<DecisionDTO> ResultadoVotacion(string nodeUrl, string backendPrivateKey, string contractAddress, string contractAbi, BigInteger idPartida, BigInteger idCapitulo);
-
+        Task<InicioPartidaDTO> IniciarNuevaPartida();
+        Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo);
         /*
         /// <summary>
         /// Almacena el voto de un jugador (off-chain) en la base de datos

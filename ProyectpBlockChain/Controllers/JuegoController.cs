@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Nethereum.Hex.HexTypes;
+using Nethereum.Model;
+using Nethereum.Web3;
 using ProyectoBlockChain.Data.Data;
+using ProyectoBlockChain.Logica;
+using ProyectoBlockChain.Logica.Core;
 using ProyectoBlockChain.Logica.Interfaces;
 using System.Numerics;
 using System.Text.Json;
@@ -13,42 +18,37 @@ namespace ProyectoBlockChain.Web.Controllers
     {
         private readonly BlockchainSettings _blockchainSettings;
         private readonly ILogicaDeJuego _logicaJuego;
+        private readonly ITemporizador _temporizador;
 
-        public JuegoController(ILogicaDeJuego LogicaDeJuego, BlockchainSettings blockchainOptions)
+        public JuegoController(ILogicaDeJuego LogicaDeJuego, BlockchainSettings blockchainOptions, ITemporizador temporizador)
         {
             _logicaJuego = LogicaDeJuego;
             _blockchainSettings = blockchainOptions;
+            _temporizador = temporizador;
         }
 
         public async Task<IActionResult> Jugar()
         {
-            var partidaId = await _logicaJuego.IniciarNuevaPartida(
-                _blockchainSettings.NodeUrl,
-                _blockchainSettings.BackendPrivateKey,
-                _blockchainSettings.ContractAddress,
-                _blockchainSettings.ContractAbi
+            // este metodo debe buscar en la base la el capitulo con sus opciones
+            InicioPartidaDTO inicioPartida = await _logicaJuego.IniciarNuevaPartida();
+
+            var capitulo = inicioPartida.Capitulo;
+            var partidaId = inicioPartida.PartidaId;    
+
+            _temporizador.IniciarTemporizador(
+                partidaId,
+                capitulo.Id,
+                async () => await _logicaJuego.FinalizarVotacion(partidaId, capitulo.Id)
             );
-
-            ViewBag.PartidaId = partidaId;
-            ViewBag.CapituloId = 1;
-            ViewBag.ContractAddress = _blockchainSettings.ContractAddress;
-
-            return View();
+            inicioPartida.ContractAddress = _blockchainSettings.ContractAddress;
+            return View(inicioPartida);
         }
-        public async Task<IActionResult> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo)
-        {
-            var resultadoVotacion = await _logicaJuego.ResultadoVotacion(
-                _blockchainSettings.NodeUrl,
-                _blockchainSettings.BackendPrivateKey,
-                _blockchainSettings.ContractAddress,
-                _blockchainSettings.ContractAbi,
-                idPartida, idCapitulo);
 
-            return View(resultadoVotacion);
-        }
-        public IActionResult FinalizarJuego()
+        public async Task<IActionResult> FinalizarVotacion(int partidaId, int capituloId)
         {
-            return View();
+            var resultado = await _logicaJuego.FinalizarVotacion(partidaId, capituloId);
+
+            return View(resultado);
         }
     }
 }
