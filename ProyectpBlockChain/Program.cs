@@ -13,13 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Registrar el DbContext (Conexión a PostgreSQL en Render)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AventuraBlockchainDbContext>(options =>
-    options.UseNpgsql(connectionString)
+    options.UseSqlServer(connectionString)
 );
 
 
 // Cargar la sección BlockchainSettings
 var blockchainSettingsSection = builder.Configuration.GetSection("BlockchainSettings");
 var blockchainSettings = blockchainSettingsSection.Get<BlockchainSettings>() ?? new BlockchainSettings();
+builder.Services.AddSingleton(blockchainSettings);
+
 
 // Leer el archivo ABI (si existe)
 if (!string.IsNullOrEmpty(blockchainSettings.ContractAbi))
@@ -36,20 +38,32 @@ if (!string.IsNullOrEmpty(blockchainSettings.ContractAbi))
     }
 }
 
-// Registrar BlockchainSettings como singleton con los valores ya cargados
-builder.Services.AddSingleton(blockchainSettings);
-
-// Si necesitás un Web3 para lecturas
-builder.Services.AddSingleton(provider =>
+builder.Services.AddSingleton<Account>(provider =>
 {
-    return new Web3(blockchainSettings.NodeUrl);
+    var settings = provider.GetRequiredService<BlockchainSettings>();
+    var privateKey = settings.BackendPrivateKey;
+    Console.WriteLine($"PRIVATE KEY LEN = {privateKey?.Length}");
+    Console.WriteLine($"PRIVATE KEY     = '{privateKey}'");
+
+    return new Account(privateKey);
+
 });
+
+// Registrar Web3 usando ese Account
+builder.Services.AddSingleton<Web3>(provider =>
+{
+    var account = provider.GetRequiredService<Account>();
+    var settings = provider.GetRequiredService<BlockchainSettings>();
+    return new Web3(account, settings.NodeUrl);
+});
+
 
 
 builder.Services.AddScoped<JuegoLogica>();
 builder.Services.AddScoped<HistoriaLogica>();
 builder.Services.AddScoped<UsuarioLogica>();
 builder.Services.AddScoped<ExploradorLogica>();
+builder.Services.AddScoped<ITemporizador, TemporizadorLogica>();
 builder.Services.AddSingleton<EstadoGlobal>();
 
 builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();

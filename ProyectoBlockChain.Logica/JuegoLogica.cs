@@ -20,12 +20,19 @@ namespace ProyectoBlockChain.Logica
         private readonly Account _cuentaBackend;
         private readonly AventuraBlockchainDbContext _context;
 
-        public JuegoLogica(AventuraBlockchainDbContext context, IConfiguration config, Web3 web3, Account cuentaBackend)
+        public JuegoLogica(AventuraBlockchainDbContext context,IConfiguration config,Web3 web3,Account cuentaBackend)
         {
             _context = context;
             _web3 = web3;
             _cuentaBackend = cuentaBackend;
+
+            // inicializar contrato blockchain
+            var abi = config["BlockchainSettings:ContractAbi"];
+            var address = config["BlockchainSettings:ContractAddress"];
+
+            _contrato = _web3.Eth.GetContract(abi, address);
         }
+
 
         // Inicia nueva partida y devulve el capitulo con sus opciones
         public async Task<InicioPartidaDTO> IniciarNuevaPartida()
@@ -34,19 +41,24 @@ namespace ProyectoBlockChain.Logica
 
             // encontrar un capitulo aleatorio que sea de inicio y elijo uno al azar
             var capitulos = _context.Capitulos.Where(c => c.EsInicio == true).ToList();
-            var capituloInicio = capitulos[random.Next(capitulos.Count)];
-
-            // registrar nueva partida en blockchain
-            BigInteger partidaId = await registrarPartidaEnBlockChain();
-
-            var fin = DateTime.UtcNow.AddSeconds(capituloInicio.TiempoLimiteSegundos);
-
-            return new InicioPartidaDTO
+            if (capitulos == null || capitulos.Count == 0)
             {
-                PartidaId = partidaId,
-                Capitulo = capituloInicio,
-                FinVotacion = fin
-            };
+                throw new Exception("El capitulo es nulo o no hay capitulos");
+            }
+            else {
+                var capituloInicio = capitulos[random.Next(capitulos.Count)];
+                var fin = DateTime.UtcNow.AddSeconds(capituloInicio.TiempoLimiteSegundos);
+
+                // registrar nueva partida en blockchain
+                BigInteger partidaId = await registrarPartidaEnBlockChain();
+
+                return new InicioPartidaDTO
+                {
+                    PartidaId = partidaId,
+                    Capitulo = capituloInicio,
+                    FinVotacion = fin
+                };
+            }
         }
 
         private async Task<BigInteger> registrarPartidaEnBlockChain()
@@ -61,45 +73,41 @@ namespace ProyectoBlockChain.Logica
 
         public async Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo)
         {
-            var web3 = _web3;
-            var contract = _contrato;
-
-            // Obtener votos de la partida
-            var obtenerVotosFunc = contract.GetFunction("obtenerVotos");
+            // 1) Obtener votos registrados en el smart contract
+            var obtenerVotosFunc = _contrato.GetFunction("obtenerVotos");
             var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>((uint)idPartida);
 
-            // Filtrar votos del capítulo
+            if (votos == null)
+                throw new Exception("No se pudieron obtener los votos desde el contrato.");
+
+            // 2) Filtrar votos del capítulo
             var votosCapitulo = votos
                 .Where(v => v.capituloId == (uint)idCapitulo)
                 .ToList();
 
-            // Contar
-            int votosA = votosCapitulo.Count(v => v.opcionElegida == "Opcion1");
-            int votosB = votosCapitulo.Count(v => v.opcionElegida == "Opcion2");
+            // 3) Contar votos
+            int votosA = votosCapitulo.Count(v => v.opcionElegida == "A");
+            int votosB = votosCapitulo.Count(v => v.opcionElegida == "B");
 
-            // Determinar ganador
+            // 4) Determinar ganador
             string ganador;
             bool desempate = false;
 
             if (votosA > votosB)
-                ganador = "Opcion1";
+                ganador = "A";
             else if (votosB > votosA)
-                ganador = "Opcion2";
+                ganador = "B";
             else
             {
-                ganador = "Opcion1"; // desempate automático
+                ganador = "A"; // tu desempate automático
                 desempate = true;
             }
 
-            // Llamar al Smart Contract para registrar la decisión final
-            var registrarFunc = contract.GetFunction("registrarDecisionFinal");
-
-            var address = _web3?.TransactionManager?.Account?.Address;
-            if (string.IsNullOrEmpty(address))
-                throw new Exception("No se ha inicializado la cuenta para transacciones blockchain.");
+            // 5) Registrar en blockchain la decisión final
+            var registrarFunc = _contrato.GetFunction("registrarDecisionFinal");
 
             var tx = await registrarFunc.SendTransactionAsync(
-                address,
+                _cuentaBackend.Address,
                 new HexBigInteger(300000),
                 null,
                 (uint)idPartida,
@@ -110,8 +118,9 @@ namespace ProyectoBlockChain.Logica
                 desempate
             );
 
-            var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(tx);
+            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(tx);
 
+            // 6) Crear DTO para la vista de resultados
             return new ResultadoVotacionDTO
             {
                 PartidaId = idPartida,
@@ -120,8 +129,10 @@ namespace ProyectoBlockChain.Logica
                 VotosB = votosB,
                 Ganador = ganador,
                 Desempate = desempate,
+                TxHash = tx
             };
         }
+
     }
 }
 

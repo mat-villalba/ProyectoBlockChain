@@ -6,13 +6,34 @@
 
 <h2>Votar historia</h2>
 
-<p>Partida: <strong>@Model.PartidaId</strong> — Capítulo: <strong>@Model.Capitulo.Id</strong></p>
+<p>
+    Partida: <strong>@Model?.PartidaId</strong> —
+    Capítulo: <strong>@Model?.Capitulo?.Id</strong>
+</p>
 
 <p>Tiempo restante: <span id="timer" style="font-weight:bold;color:red"></span></p>
 
 <div style="margin-top:20px;">
-    <button id="btnA">Votar Opción A</button>
-    <button id="btnB">Votar Opción B</button>
+    <p>
+        @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Descripcion)
+                ? "Descripción del capitulo"
+                : Model.Capitulo.Descripcion)
+    </p>
+</div>
+
+
+<div style="margin-top:20px;">
+    <button id="btn-op1">
+        @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Opcion1)
+                ? "Texto Opción 1"
+                : Model.Capitulo.Opcion1)
+    </button>
+
+    <button id="btn-op2">
+        @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Opcion2)
+                ? "Texto Opción 2"
+                : Model.Capitulo.Opcion2)
+    </button>
 </div>
 
 <p id="status" style="margin-top:12px;color:green"></p>
@@ -42,11 +63,16 @@
             const now = Date.now();
             const diff = finVotacion - now;
 
-            if (diff <= 0) {
-                timerEl.innerText = "⛔ Tiempo terminado";
-                clearInterval(interval); // OPCIONAL pero prolijo
-                return;
-            }
+                if (diff <= 0) {
+                    timerEl.innerText = "⛔ Tiempo terminado";
+                    clearInterval(interval);
+
+                    document.getElementById("btn-op1").disabled = true;
+                    document.getElementById("btn-op2").disabled = true;
+
+                    return;
+                }
+
 
             timerEl.innerText = Math.floor(diff / 1000) + " segundos";
         }, 500);
@@ -81,8 +107,9 @@
             }
         }
 
-        document.getElementById("btnA").addEventListener("click", () => vote("A"));
-        document.getElementById("btnB").addEventListener("click", () => vote("B"));
+        document.getElementById("btn-op1").addEventListener("click", () => vote("Opcion1"));
+        document.getElementById("btn-op2").addEventListener("click", () => vote("Opcion2"));
+
 
     })();
 </script>
