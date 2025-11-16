@@ -11,7 +11,7 @@ namespace ProyectoBlockChain.Logica.Core
     [FunctionOutput]
     public class VotoDTO : IFunctionOutputDTO
     {
-        // estructura de voto de solidity
+        // para leer votos desde blockchain
 
         [Parameter("address", "jugador", 1)]
         public string Jugador { get; set; }

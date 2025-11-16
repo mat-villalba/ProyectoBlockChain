@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -14,8 +15,7 @@
     <header>
         <a asp-area="" asp-controller="Inicio" asp-action="Index"><img src="~/logito.png" alt="Logo" /></a>
         <nav>
-            <a asp-area="" asp-controller="Inicio" asp-action="Login">Iniciar Sesión</a>
-            <a asp-area="" asp-controller="Inicio" asp-action="Register">Registrarse</a>
+            <p style="color: aliceblue">Bienvenido a "Insertar nombre de juego"</p>
         </nav>
     </header>
     <div>
@@ -30,7 +30,19 @@
             <a href="#">Contacto</a>
             <a href="#">Política de Privacidad</a>
         </div>
-        <p>&copy; 2025 Tp Progra Web 3</p>
+        <p>&copy; 2025 Tp Progra Web 2</p>
     </footer>
+
+    <!-- (Scripts principales que tu Layout ya tenía) -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!--
+      Renderiza la sección "Scripts" definida en las vistas.
+      'required: false' significa que no todas las vistas están obligadas
+      a tener una sección "Scripts".
+    -->
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

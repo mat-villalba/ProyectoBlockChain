@@ -10,6 +10,15 @@ using ProyectoBlockChain.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar la sesión
+builder.Services.AddDistributedMemoryCache(); // Almacenamiento en memoria para la sesión
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de inactividad
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Registrar el DbContext (Conexión a PostgreSQL en Render)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AventuraBlockchainDbContext>(options =>
@@ -86,6 +95,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthorization();
 
@@ -93,7 +103,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Inicio}/{action=Index}/{id?}")
+    pattern: "{controller=Jugador}/{action=IniciarSesion}/{id?}")
     .WithStaticAssets();
 
 

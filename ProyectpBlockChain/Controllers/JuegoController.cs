@@ -50,5 +50,8 @@ namespace ProyectoBlockChain.Web.Controllers
 
             return View(resultado);
         }
+    
+        
+    
     }
 }

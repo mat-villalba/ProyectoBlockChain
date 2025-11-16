@@ -88,24 +88,44 @@
             return provider;
         }
 
-        async function vote(opcion) {
-            try {
-                const provider = await ensureProvider();
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+            async function vote(opcion) {
+        try {
+            const provider = await ensureProvider();
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-                show(`Votando opción ${opcion}...`);
-                const tx = await contract.votar(partidaId, capituloId, opcion, { gasLimit: 300000 });
+            show(`Votando opción ${opcion}...`);
+            const tx = await contract.votar(partidaId, capituloId, opcion, { gasLimit: 300000 });
 
-                show('Esperando confirmación...');
-                await tx.wait();
+            show('Esperando confirmación...');
+            await tx.wait();
 
-                show("✅ Voto registrado en blockchain");
-            } catch (err) {
-                console.error(err);
-                show("❌ Error al votar");
+            show("✅ Voto registrado en blockchain");
+
+            const response = await fetch("/Jugar/RegistrarVotoEmitido", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    partidaId: partidaId,
+                    capituloId: capituloId,
+                    opcionElegida: opcion
+                })
+            });
+
+            if (!response.ok) {
+                show("⚠️ Voto en blockchain OK, pero error guardando en backend");
+                return;
             }
+
+            show("🎉 Voto procesado — avanzando...");
+            window.location.reload(); // opcional: recargar capítulo
+
+        } catch (err) {
+            console.error(err);
+            show("❌ Error al votar");
         }
+    }
+
 
         document.getElementById("btn-op1").addEventListener("click", () => vote("Opcion1"));
         document.getElementById("btn-op2").addEventListener("click", () => vote("Opcion2"));
