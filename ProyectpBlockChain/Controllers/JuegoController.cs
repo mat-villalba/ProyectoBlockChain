@@ -51,31 +51,5 @@ namespace ProyectoBlockChain.Web.Controllers
             return View(resultado);
         }
 
-
-        [HttpPost]
-        public IActionResult RegistrarVotoEmitido([FromBody] VotoDTO dto)
-        {
-            var wallet = HttpContext.Session.GetString("UserWalletAddress");
-            var userName = HttpContext.Session.GetString("UserName");
-
-            if (wallet == null)
-            {
-                return Unauthorized("La sesión expiró o no existe.");
-            }
-
-            // Guardar voto en base de datos
-            var votoARegistrar = new Voto(
-                        dto.PartidaId,
-                        dto.CapituloId,
-                        dto.OpcionElegida,
-                        wallet,
-                        DateTime.Now
-                    );
-
-            _logicaJuego.RegistrarVoto(votoARegistrar);
-
-            return Ok(new { mensaje = "Voto guardado" });
-        }
-
     }
 }

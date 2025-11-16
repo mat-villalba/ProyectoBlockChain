@@ -14,7 +14,8 @@ public partial class Voto
         IdJugador = idJugador;
         Timestamp = fecha;
     }
-                        
+    public Voto() { }
+
     public int Id { get; set; }
 
     public string IdJugador { get; set; } = null!;
@@ -27,9 +28,9 @@ public partial class Voto
 
     public DateTime Timestamp { get; set; }
 
-    public virtual Capitulo IdCapituloNavigation { get; set; } = null!;
+    public virtual Capitulo? IdCapituloNavigation { get; set; }
 
-    public virtual Jugador IdJugadorNavigation { get; set; } = null!;
+    public virtual Jugador? IdJugadorNavigation { get; set; } 
 
-    public virtual Partidum IdPartidaNavigation { get; set; } = null!;
+    public virtual Partidum? IdPartidaNavigation { get; set; }
 }

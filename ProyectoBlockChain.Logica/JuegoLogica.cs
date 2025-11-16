@@ -20,12 +20,12 @@ namespace ProyectoBlockChain.Logica
         private readonly Account _cuentaBackend;
         private readonly AventuraBlockchainDbContext _context;
 
-        public JuegoLogica(AventuraBlockchainDbContext context, IConfiguration config, Web3 web3, Account cuentaBackend)
+
+        public JuegoLogica(AventuraBlockchainDbContext context, IConfiguration config, Account cuentaBackend, Web3 web3)
         {
             _context = context;
             _web3 = web3;
             _cuentaBackend = cuentaBackend;
-
             // inicializar contrato blockchain
             var abi = config["BlockchainSettings:ContractAbi"];
             var address = config["BlockchainSettings:ContractAddress"];
@@ -66,11 +66,23 @@ namespace ProyectoBlockChain.Logica
         private async Task<BigInteger> registrarPartidaEnBlockChain()
         {
             var funcionIniciar = _contrato.GetFunction("iniciarNuevaPartida");
-            var receipt = await funcionIniciar.SendTransactionAndWaitForReceiptAsync(_cuentaBackend.Address);
 
+            // Ejecutar la transacción
+            await funcionIniciar.SendTransactionAndWaitForReceiptAsync(
+                _cuentaBackend.Address,
+                new HexBigInteger(300000),
+                null,
+                null
+            );
+
+            // Leer el nuevo id
             var funcionId = _contrato.GetFunction("proximaPartidaId");
-            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>()) - 1;
-            return idPartidaBlockchain;
+            var idActual = await funcionId.CallAsync<BigInteger>();
+
+            // Como el contrato incrementa antes de devolver:
+            // nuevaPartidaId = proximaPartidaId ANTERIOR
+            // la variable ahora está incrementada, así que restamos 1
+            return idActual - 1;
         }
 
         public async Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo)

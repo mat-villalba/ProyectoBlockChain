@@ -41,6 +41,10 @@
 <p id="status" style="margin-top:12px;color:green"></p>
 <pre id="out" style="white-space:pre-wrap;background:#f4f4f4;padding:10px;margin-top:8px;"></pre>
 
+<button id="btn-finalizar" disabled class="btn btn-primary">
+    Finalizar votación
+</button>
+
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
 <script>
@@ -49,6 +53,8 @@
         const partidaId = @Model.PartidaId;
         const capituloId = @Model.Capitulo.Id;
         const finVotacion = new Date("@Model.FinVotacion.ToString("o")").getTime();
+        
+        const btnFinalizar = document.getElementById("btn-finalizar");
 
         const CONTRACT_ADDRESS = "@Model.ContractAddress";
         const CONTRACT_ABI = await fetch('/abi/Contrato.json').then(r => r.json());
@@ -71,6 +77,13 @@
 
                     document.getElementById("btn-op1").disabled = true;
                     document.getElementById("btn-op2").disabled = true;
+
+                    // Redirigir automáticamente a "Finalizar votación"
+                    btnFinalizar.disabled = false;
+
+                    setTimeout(() => {
+                        window.location.href = `/Juego/FinalizarVotacion?partidaId=${partidaId}&capituloId=${capituloId}`;
+                    }, 1500);
 
                     return;
                 }
@@ -104,30 +117,15 @@
 
             show("✅ Voto registrado en blockchain");
 
-            const response = await fetch("/Jugar/RegistrarVotoEmitido", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    partidaId: partidaId,
-                    capituloId: capituloId,
-                    opcionElegida: opcion
-                })
-            });
-
-            if (!response.ok) {
-                show("⚠️ Voto en blockchain OK, pero error guardando en backend");
-                return;
-            }
-
-            show("🎉 Voto procesado — avanzando...");
-            window.location.reload(); // opcional: recargar capítulo
-
         } catch (err) {
             console.error(err);
             show("❌ Error al votar");
         }
     }
 
+        btnFinalizar.addEventListener("click", () => {
+            window.location.href = `/Juego/FinalizarVotacion?partidaId=${partidaId}&capituloId=${capituloId}`;
+        });
 
         document.getElementById("btn-op1").addEventListener("click", () => vote("Opcion1"));
         document.getElementById("btn-op2").addEventListener("click", () => vote("Opcion2"));

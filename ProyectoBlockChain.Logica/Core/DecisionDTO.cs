@@ -28,6 +28,5 @@ namespace ProyectoBlockChain.Logica.Core
 
         // para logica en backend
         public int PartidaId { get; set; }
-        public string TxHash { get; set; } // <-- Agregar esta propiedad para corregir CS1061
     }
 }
