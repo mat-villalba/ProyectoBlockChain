@@ -11,7 +11,6 @@ namespace ProyectoBlockChain.Logica.Interfaces
     /// </summary>
     public interface ILogicaDeJuego
     {
-        void RegistrarVoto(Voto voto);
         Task<InicioPartidaDTO> IniciarNuevaPartida();
         Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo);
         /*
