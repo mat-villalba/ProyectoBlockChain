@@ -69,7 +69,7 @@ namespace ProyectoBlockChain.Logica
             var receipt = await funcionIniciar.SendTransactionAndWaitForReceiptAsync(_cuentaBackend.Address);
 
             var funcionId = _contrato.GetFunction("proximaPartidaId");
-            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>()) - 1;
+            var idPartidaBlockchain = (await funcionId.CallAsync<BigInteger>());
             return idPartidaBlockchain;
         }
 
@@ -77,7 +77,7 @@ namespace ProyectoBlockChain.Logica
         {
             // 1) Obtener votos registrados en el smart contract
             var obtenerVotosFunc = _contrato.GetFunction("obtenerVotos");
-            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>((uint)idPartida);
+            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>(idPartida);
 
             if (votos == null)
                 throw new Exception("No se pudieron obtener los votos desde el contrato.");
@@ -134,15 +134,8 @@ namespace ProyectoBlockChain.Logica
                 TxHash = tx
             };
         }
-
-            public void RegistrarVoto(Voto voto)
-            {
-                // registrar voto en la base de datos
-                _context.Votos.Add(voto);
-
-            }
-        }
     }
+}
 
 
 

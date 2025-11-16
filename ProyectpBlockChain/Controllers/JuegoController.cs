@@ -44,38 +44,22 @@ namespace ProyectoBlockChain.Web.Controllers
             return View(inicioPartida);
         }
 
-        public async Task<IActionResult> FinalizarVotacion(int partidaId, int capituloId)
+        [HttpPost]
+        public async Task<IActionResult> FinalizarVotacion([FromBody] FinalizarVotacionDTO data)
         {
-            var resultado = await _logicaJuego.FinalizarVotacion(partidaId, capituloId);
+            if (data == null)
+            {
+                return BadRequest("No llegó el cuerpo JSON.");
+            }
+
+            var resultado = await _logicaJuego.FinalizarVotacion(
+                data.PartidaId,
+                data.CapituloId
+            );
 
             return View(resultado);
         }
 
-
-        [HttpPost]
-        public IActionResult RegistrarVotoEmitido([FromBody] VotoDTO dto)
-        {
-            var wallet = HttpContext.Session.GetString("UserWalletAddress");
-            var userName = HttpContext.Session.GetString("UserName");
-
-            if (wallet == null)
-            {
-                return Unauthorized("La sesión expiró o no existe.");
-            }
-
-            // Guardar voto en base de datos
-            var votoARegistrar = new Voto(
-                        dto.PartidaId,
-                        dto.CapituloId,
-                        dto.OpcionElegida,
-                        wallet,
-                        DateTime.Now
-                    );
-
-            _logicaJuego.RegistrarVoto(votoARegistrar);
-
-            return Ok(new { mensaje = "Voto guardado" });
-        }
 
     }
 }
