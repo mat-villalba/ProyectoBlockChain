@@ -31,7 +31,8 @@ namespace ProyectoBlockChain.Web.Controllers
             var partidas = await _logicaExplorador.ObtenerDecisionesFinales(
                 _blockchainSettings.NodeUrl,
                 _blockchainSettings.ContractAddress,
-                _blockchainSettings.ContractAbi
+                _blockchainSettings.ContractAbi,
+                0
                 );
 
             return View(partidas);
