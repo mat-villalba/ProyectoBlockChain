@@ -20,7 +20,7 @@ namespace ProyectoBlockChain.Logica
         private readonly Account _cuentaBackend;
         private readonly AventuraBlockchainDbContext _context;
 
-        public JuegoLogica(AventuraBlockchainDbContext context,IConfiguration config,Web3 web3,Account cuentaBackend)
+        public JuegoLogica(AventuraBlockchainDbContext context, IConfiguration config, Web3 web3, Account cuentaBackend)
         {
             _context = context;
             _web3 = web3;
@@ -45,7 +45,8 @@ namespace ProyectoBlockChain.Logica
             {
                 throw new Exception("El capitulo es nulo o no hay capitulos");
             }
-            else {
+            else
+            {
                 var capituloInicio = capitulos[random.Next(capitulos.Count)];
                 var fin = DateTime.UtcNow.AddSeconds(capituloInicio.TiempoLimiteSegundos);
 
@@ -83,12 +84,12 @@ namespace ProyectoBlockChain.Logica
 
             // 2) Filtrar votos del capítulo
             var votosCapitulo = votos
-                .Where(v => v.capituloId == (uint)idCapitulo)
+                .Where(v => v.CapituloId == (uint)idCapitulo)
                 .ToList();
 
             // 3) Contar votos
-            int votosA = votosCapitulo.Count(v => v.opcionElegida == "A");
-            int votosB = votosCapitulo.Count(v => v.opcionElegida == "B");
+            int votosA = votosCapitulo.Count(v => v.OpcionElegida == "A");
+            int votosB = votosCapitulo.Count(v => v.OpcionElegida == "B");
 
             // 4) Determinar ganador
             string ganador;
@@ -134,8 +135,14 @@ namespace ProyectoBlockChain.Logica
             };
         }
 
+            public void RegistrarVoto(Voto voto)
+            {
+                // registrar voto en la base de datos
+                _context.Votos.Add(voto);
+
+            }
+        }
     }
-}
 
 
 

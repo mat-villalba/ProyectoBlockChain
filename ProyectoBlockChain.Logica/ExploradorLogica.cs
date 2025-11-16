@@ -8,7 +8,7 @@ namespace ProyectoBlockChain.Logica
     public class ExploradorLogica : ILogicaExplorador
     {
 
-        public async Task<List<VotoDTO>> ObtenerTodosLosVotos(string nodeUrl, string contractAddress, string contractAbi)
+        public async Task<List<VotoSolidityDTO>> ObtenerTodosLosVotos(string nodeUrl, string contractAddress, string contractAbi)
         {
             var web3 = new Web3(nodeUrl);
             var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
@@ -18,12 +18,12 @@ namespace ProyectoBlockChain.Logica
 
             var funcionVotos = contrato.GetFunction("obtenerVotos");
 
-            var votosTotales = new List<VotoDTO>();
+            var votosTotales = new List<VotoSolidityDTO>();
 
             for (int i = 0; i < (int)totalPartidas; i++)
             {
                 var result = await funcionVotos.CallDeserializingToObjectAsync<ObtenerVotosOutputDTO>(i);
-                var votos = result.Votos ?? new List<VotoDTO>();
+                var votos = result.Votos ?? new List<VotoSolidityDTO>();
 
                 foreach (var voto in votos)
                 {

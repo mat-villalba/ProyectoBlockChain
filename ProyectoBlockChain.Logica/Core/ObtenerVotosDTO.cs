@@ -6,5 +6,5 @@ using System.Collections.Generic;
 public class ObtenerVotosOutputDTO : IFunctionOutputDTO
 {
     [Parameter("tuple[]", "", 1)]
-    public List<VotoDTO> Votos { get; set; }
+    public List<VotoSolidityDTO> Votos { get; set; }
 }

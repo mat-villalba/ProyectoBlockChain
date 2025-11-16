@@ -5,6 +5,16 @@ namespace ProyectoBlockChain.Data.Data;
 
 public partial class Voto
 {
+
+    public Voto(int partidaId, int capituloId, string opcionElegida, string idJugador, DateTime fecha)
+    {
+        IdPartida = partidaId;
+        IdCapitulo = capituloId;
+        OpcionElegida = opcionElegida;
+        IdJugador = idJugador;
+        Timestamp = fecha;
+    }
+                        
     public int Id { get; set; }
 
     public string IdJugador { get; set; } = null!;
