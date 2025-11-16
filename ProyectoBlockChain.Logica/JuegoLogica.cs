@@ -50,6 +50,7 @@ namespace ProyectoBlockChain.Logica
                 var fin = DateTime.UtcNow.AddSeconds(capituloInicio.TiempoLimiteSegundos);
 
                 // registrar nueva partida en blockchain
+                _web3.TransactionManager.DefaultGas = new HexBigInteger(300000);
                 BigInteger partidaId = await registrarPartidaEnBlockChain();
 
                 return new InicioPartidaDTO
