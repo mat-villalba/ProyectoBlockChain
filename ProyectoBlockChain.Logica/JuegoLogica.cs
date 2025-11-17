@@ -85,76 +85,90 @@ namespace ProyectoBlockChain.Logica
             return idActual - 1;
         }
 
-        public async Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger idPartida, BigInteger idCapitulo)
+        public async Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger partidaId, BigInteger capituloId)
         {
-            // 1) Obtener votos registrados en el smart contract
+            // 1) Obtener votos desde blockchain
             var obtenerVotosFunc = _contrato.GetFunction("obtenerVotos");
-            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>((uint)idPartida);
+            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>((uint)partidaId);
 
             if (votos == null)
-                throw new Exception("No se pudieron obtener los votos desde el contrato.");
+                throw new Exception("No se pudieron obtener los votos.");
 
-            // 2) Filtrar votos del capítulo
-            var votosCapitulo = votos
-                .Where(v => v.CapituloId == (uint)idCapitulo)
+            // 2) Filtrar votos por capítulo
+            var votosCapitulo = votos.Where(v => v.CapituloId == capituloId).ToList();
+
+            if (!votosCapitulo.Any())
+            {
+                return new ResultadoVotacionDTO
+                {
+                    PartidaId = partidaId,
+                    CapituloId = capituloId,
+                    Ganador = null,
+                    Desempate = false,
+                    TxHash = null,
+                    VotosPorOpcion = new Dictionary<string, int>()
+                };
+            }
+
+            // 3) Agrupar dinámicamente por la opción elegida
+            var grupos = votosCapitulo
+                .GroupBy(v => v.OpcionElegida)
+                .Select(g => new { Opcion = g.Key, Cant = g.Count() })
+                .OrderByDescending(g => g.Cant)
                 .ToList();
 
-            // 3) Contar votos
-            int votosA = votosCapitulo.Count(v => v.OpcionElegida == "A");
-            int votosB = votosCapitulo.Count(v => v.OpcionElegida == "B");
-
-            // 4) Determinar ganador
-            string ganador;
+            // 4) Determinar ganador + desempate si es necesario
+            var top = grupos[0];
+            string ganador = top.Opcion;
             bool desempate = false;
 
-            if (votosA > votosB)
-                ganador = "A";
-            else if (votosB > votosA)
-                ganador = "B";
-            else
+            // buscar otros con el mismo conteo
+            var empatados = grupos.Where(g => g.Cant == top.Cant).ToList();
+            if (empatados.Count > 1)
             {
-                ganador = "A"; // tu desempate automático
+                var rnd = new Random();
+                var elegido = empatados[rnd.Next(empatados.Count)];
+                ganador = elegido.Opcion;
                 desempate = true;
             }
 
-            // 5) Registrar en blockchain la decisión final
-            var registrarFunc = _contrato.GetFunction("registrarDecisionFinal");
+            int votosGanador = grupos.First(g => g.Opcion == ganador).Cant;
+            int votosSegundo = grupos.Where(g => g.Opcion != ganador)
+                                     .Select(g => g.Cant)
+                                     .DefaultIfEmpty(0)
+                                     .Max();
 
-            var tx = await registrarFunc.SendTransactionAsync(
-                _cuentaBackend.Address,
-                new HexBigInteger(300000),
-                null,
-                (uint)idPartida,
-                (uint)idCapitulo,
-                ganador,
-                votosA,
-                votosB,
-                desempate
+            // 5) Registrar decisión final en blockchain
+            var registrar = _contrato.GetFunction("registrarDecisionFinal");
+
+            var tx = await registrar.SendTransactionAsync(
+                from: _cuentaBackend.Address,
+                gas: new HexBigInteger(300000),
+                value: null,
+                functionInput: new object[]
+                {
+                    (uint)partidaId,
+                    (uint)capituloId,
+                    ganador,
+                    votosGanador,
+                    votosSegundo,
+                    desempate
+                }
             );
 
-            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(tx);
-
-            // 6) Crear DTO para la vista de resultados
+            // 6) Devolver DTO listo para el controlador o quien lo necesite
             return new ResultadoVotacionDTO
             {
-                PartidaId = idPartida,
-                CapituloId = idCapitulo,
-                VotosA = votosA,
-                VotosB = votosB,
+                PartidaId = partidaId,
+                CapituloId = capituloId,
                 Ganador = ganador,
                 Desempate = desempate,
-                TxHash = tx
+                TxHash = tx,
+                VotosPorOpcion = grupos.ToDictionary(g => g.Opcion, g => g.Cant),
             };
         }
-
-            public void RegistrarVoto(Voto voto)
-            {
-                // registrar voto en la base de datos
-                _context.Votos.Add(voto);
-
-            }
-        }
     }
+}
 
 
 

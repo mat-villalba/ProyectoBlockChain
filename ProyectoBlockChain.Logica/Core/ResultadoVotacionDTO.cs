@@ -12,10 +12,9 @@ namespace ProyectoBlockChain.Logica.Core
     {
         public BigInteger PartidaId { get; set; }
         public BigInteger CapituloId { get; set; }
-        public int VotosA { get; set; }
-        public int VotosB { get; set; }
         public string Ganador { get; set; }
         public bool Desempate { get; set; }
         public string TxHash { get; set; }
+        public Dictionary<string, int> VotosPorOpcion { get; set; }
     }
 }
