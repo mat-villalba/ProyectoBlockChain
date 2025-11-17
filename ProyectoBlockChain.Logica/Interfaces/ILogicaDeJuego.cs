@@ -14,6 +14,7 @@ namespace ProyectoBlockChain.Logica.Interfaces
         Task<InicioPartidaDTO> IniciarNuevaPartida();
         Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger partidaId, BigInteger capituloId);
         Task<InicioPartidaDTO> ObtenerSiguienteCapitulo(BigInteger partidaId, BigInteger capituloId);
+        Task<List<CapituloJugadoDTO>> ObtenerHistorialPartida(BigInteger partidaId);
 
         /*
         /// <summary>

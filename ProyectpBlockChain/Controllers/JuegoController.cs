@@ -54,6 +54,11 @@ namespace ProyectoBlockChain.Web.Controllers
 
             dto.ContractAddress = _blockchainSettings.ContractAddress;
 
+            if (dto.Capitulo.EsFinal)
+            {
+                return RedirectToAction("FinalizarJuego", new { partidaId = partidaId });
+            }
+
             _temporizador.IniciarTemporizador(
                 partidaId,
                 dto.Capitulo.Id,
@@ -70,6 +75,13 @@ namespace ProyectoBlockChain.Web.Controllers
 
             return View(resultado);
         }
+        public async Task<IActionResult> FinalizarJuego(BigInteger partidaId)
+        {
+            var historial = await _logicaJuego.ObtenerHistorialPartida(partidaId);
+
+            return View(historial);
+        }
+
 
     }
 }

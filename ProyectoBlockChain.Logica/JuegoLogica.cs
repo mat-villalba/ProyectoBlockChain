@@ -264,6 +264,37 @@ namespace ProyectoBlockChain.Logica
                 TextoOpcionGanadora = textoGanador
             };
         }
+    public async Task<List<CapituloJugadoDTO>> ObtenerHistorialPartida(BigInteger partidaId)
+        {
+            var historial = new List<CapituloJugadoDTO>();
+
+            // 1. Traer todos los votos / decisiones finales de la partida desde blockchain
+            var obtenerDecisionesFunc = _contrato.GetFunction("obtenerDecisionesFinales");
+            // Este método debería devolver todas las decisiones finales registradas en la partida
+            var decisiones = await obtenerDecisionesFunc.CallAsync<List<DecisionFinalSolidityDTO>>(partidaId);
+
+            if (decisiones == null || !decisiones.Any())
+                return historial;
+
+            // 2. Recorrer cada decisión y mapear con la base de datos para obtener la descripción del capítulo
+            foreach (var decision in decisiones.OrderBy(d => d.Timestamp))
+            {
+                var capitulo = await _context.Capitulos.FindAsync((int)decision.CapituloId);
+
+                if (capitulo != null)
+                {
+                    historial.Add(new CapituloJugadoDTO
+                    {
+                        CapituloId = capitulo.Id,
+                        Descripcion = capitulo.Descripcion,
+                        OpcionElegida = decision.OpcionGanadora
+                    });
+                }
+            }
+
+            return historial;
+        }
+
     }
 }
 
