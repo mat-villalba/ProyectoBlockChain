@@ -29,6 +29,11 @@ namespace ProyectoBlockChain.Web.Controllers
 
         public async Task<IActionResult> Jugar()
         {
+            return RedirectToAction("Comenzar");
+        }
+
+        public async Task<IActionResult> Comenzar()
+        {
             // este metodo debe buscar en la base la el capitulo con sus opciones
             InicioPartidaDTO inicioPartida = await _logicaJuego.IniciarNuevaPartida();
 
@@ -41,8 +46,23 @@ namespace ProyectoBlockChain.Web.Controllers
                 async () => await _logicaJuego.FinalizarVotacion(partidaId, capitulo.Id)
             );
             inicioPartida.ContractAddress = _blockchainSettings.ContractAddress;
-            return View(inicioPartida);
+            return View("Jugar", inicioPartida);
         }
+        public async Task<IActionResult> Continuar(BigInteger partidaId, BigInteger capituloId)
+        {
+            var dto = await _logicaJuego.ObtenerSiguienteCapitulo(partidaId, capituloId);
+
+            dto.ContractAddress = _blockchainSettings.ContractAddress;
+
+            _temporizador.IniciarTemporizador(
+                partidaId,
+                dto.Capitulo.Id,
+                async () => await _logicaJuego.FinalizarVotacion(partidaId, dto.Capitulo.Id)
+            );
+
+            return View("Jugar", dto);
+        }
+
 
         public async Task<IActionResult> FinalizarVotacion(int partidaId, int capituloId)
         {

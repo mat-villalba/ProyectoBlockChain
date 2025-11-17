@@ -46,6 +46,7 @@
             </p>
         </div>
 
-        <a asp-controller="Juego" asp-action="Jugar" class="btn btn-primary mt-3">Continuar juego</a>
+        <a asp-controller="Juego" asp-action="Continuar" asp-route-partidaId="@Model.PartidaId"
+           asp-route-capituloId="@Model.CapituloId" class="btn btn-primary mt-3">Continuar juego</a>
     </div>
 </div>

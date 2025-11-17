@@ -85,6 +85,58 @@ namespace ProyectoBlockChain.Logica
             return idActual - 1;
         }
 
+        public async Task<InicioPartidaDTO> ObtenerSiguienteCapitulo(BigInteger partidaId, BigInteger capituloId)
+        {
+            // 1. Traer resultado desde blockchain
+            var siguienteCapituloId = await ObtenerCapituloGanador(partidaId, capituloId);
+
+            // 2. Buscar capítulo actual en BD
+            var siguienteCapitulo = await _context.Capitulos.FindAsync((int)siguienteCapituloId);
+
+            var fin = DateTime.UtcNow.AddSeconds(siguienteCapitulo.TiempoLimiteSegundos);
+
+            return new InicioPartidaDTO
+            {
+                PartidaId = partidaId,
+                Capitulo = siguienteCapitulo,
+                FinVotacion = fin
+            };
+        }
+
+        private async Task<int?> ObtenerCapituloGanador(BigInteger partidaId, BigInteger capituloId)
+        {
+            var obtenerVotosFunc = _contrato.GetFunction("obtenerVotos");
+            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>(partidaId);
+
+            if (votos == null)
+                throw new Exception("No se pudieron obtener los votos.");
+
+            // Filtrar por capítulo actual
+            var votosCapitulo = votos.Where(v => (int)v.CapituloId == (int)capituloId).ToList();
+
+            if (!votosCapitulo.Any())
+                return null;
+
+            // Agrupar por ID REAL del capítulo elegido
+            var grupos = votosCapitulo
+                .GroupBy(v => Convert.ToInt32(v.OpcionElegida))
+                .Select(g => new { CapituloId = g.Key, Cant = g.Count() })
+                .OrderByDescending(g => g.Cant)
+                .ToList();
+
+            var top = grupos[0];
+
+            // Empate
+            var empatados = grupos.Where(g => g.Cant == top.Cant).ToList();
+            if (empatados.Count > 1)
+            {
+                var rnd = new Random();
+                return empatados[rnd.Next(empatados.Count)].CapituloId;
+            }
+
+            return top.CapituloId;
+        }
+
         public async Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger partidaId, BigInteger capituloId)
         {
             // --- 0) Convertir BigInteger a int (para usar con EF) ---

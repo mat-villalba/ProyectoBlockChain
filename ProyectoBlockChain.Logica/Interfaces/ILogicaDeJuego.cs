@@ -13,6 +13,8 @@ namespace ProyectoBlockChain.Logica.Interfaces
     {
         Task<InicioPartidaDTO> IniciarNuevaPartida();
         Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger partidaId, BigInteger capituloId);
+        Task<InicioPartidaDTO> ObtenerSiguienteCapitulo(BigInteger partidaId, BigInteger capituloId);
+
         /*
         /// <summary>
         /// Almacena el voto de un jugador (off-chain) en la base de datos
