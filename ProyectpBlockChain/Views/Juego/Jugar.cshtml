@@ -66,6 +66,9 @@
         function show(msg) { statusEl.innerText = msg; }
         function log(o) { outEl.innerText = JSON.stringify(o, null, 2); }
 
+    console.log(CONTRACT_ABI);
+    console.log(CONTRACT_ADDRESS);
+
         // --- TEMPORIZADOR ---
         const interval = setInterval(() => {
             const now = Date.now();
@@ -130,8 +133,8 @@
         const btnOp1 = document.getElementById("btn-op1");
         const btnOp2 = document.getElementById("btn-op2");
 
-        btnOp1.addEventListener("click", () => vote(parseInt(btnOp1.dataset.next)));
-        btnOp2.addEventListener("click", () => vote(parseInt(btnOp2.dataset.next)));
+        btnOp1.addEventListener("click", () => vote(btnOp1.dataset.next));
+        btnOp2.addEventListener("click", () => vote(btnOp2.dataset.next));
 
 
     })();
