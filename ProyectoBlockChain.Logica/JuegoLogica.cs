@@ -87,9 +87,17 @@ namespace ProyectoBlockChain.Logica
 
         public async Task<ResultadoVotacionDTO> FinalizarVotacion(BigInteger partidaId, BigInteger capituloId)
         {
+            // --- 0) Convertir BigInteger a int (para usar con EF) ---
+            if (partidaId < 0 || capituloId < 0)
+                throw new ArgumentException("IDs no pueden ser negativos.");
+            if (partidaId > int.MaxValue || capituloId > int.MaxValue)
+                throw new ArgumentOutOfRangeException("IDs demasiado grandes para ser manejados por la BD.");
+            int partidaInt = (int)partidaId;
+            int capituloInt = (int)capituloId;
+
             // 1) Obtener votos desde blockchain
             var obtenerVotosFunc = _contrato.GetFunction("obtenerVotos");
-            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>((uint)partidaId);
+            var votos = await obtenerVotosFunc.CallAsync<List<VotoSolidityDTO>>((uint)partidaInt);
 
             if (votos == null)
                 throw new Exception("No se pudieron obtener los votos.");
@@ -106,7 +114,9 @@ namespace ProyectoBlockChain.Logica
                     Ganador = null,
                     Desempate = false,
                     TxHash = null,
-                    VotosPorOpcion = new Dictionary<string, int>()
+                    VotosPorOpcion = new Dictionary<string, int>(),
+                    Descripcion = null,
+                    TextoOpcionGanadora = null
                 };
             }
 
@@ -147,8 +157,8 @@ namespace ProyectoBlockChain.Logica
                 value: null,
                 functionInput: new object[]
                 {
-                    (uint)partidaId,
-                    (uint)capituloId,
+                    (uint)partidaInt,
+                    (uint)capituloInt,
                     ganador,
                     votosGanador,
                     votosSegundo,
@@ -156,7 +166,40 @@ namespace ProyectoBlockChain.Logica
                 }
             );
 
-            // 6) Devolver DTO listo para el controlador o quien lo necesite
+            // 6) Obtener datos del capítulo desde la DB usando capituloInt (int)
+            var capitulo = _context.Capitulos.FirstOrDefault(c => c.Id == capituloInt);
+
+            string descripcion = null;
+            if (capitulo != null && !string.IsNullOrWhiteSpace(capitulo.Descripcion))
+            {
+                descripcion = capitulo.Descripcion.Length > 80
+                    ? capitulo.Descripcion + "..."
+                    : capitulo.Descripcion;
+            }
+
+            // Texto de la opción ganadora: ganador contiene la clave (por ejemplo el id del capítulo siguiente)
+            string textoGanador = null;
+            if (capitulo != null)
+            {
+                // Si las opciones guardan los ids de capítulo siguientes en IdOpcion1 / IdOpcion2
+                if (int.TryParse(ganador, out int ganadorId))
+                {
+                    if (capitulo.IdOpcion1.HasValue && capitulo.IdOpcion1.Value == ganadorId)
+                        textoGanador = capitulo.Opcion1;
+                    else if (capitulo.IdOpcion2.HasValue && capitulo.IdOpcion2.Value == ganadorId)
+                        textoGanador = capitulo.Opcion2;
+                }
+                else
+                {
+                    // Si ganador no es id sino texto (ej: "Opcion1"), adaptá según tu formato:
+                    if (ganador.Equals("Opcion1", StringComparison.OrdinalIgnoreCase))
+                        textoGanador = capitulo.Opcion1;
+                    else if (ganador.Equals("Opcion2", StringComparison.OrdinalIgnoreCase))
+                        textoGanador = capitulo.Opcion2;
+                }
+            }
+
+            // 7) Devolver DTO
             return new ResultadoVotacionDTO
             {
                 PartidaId = partidaId,
@@ -165,6 +208,8 @@ namespace ProyectoBlockChain.Logica
                 Desempate = desempate,
                 TxHash = tx,
                 VotosPorOpcion = grupos.ToDictionary(g => g.Opcion, g => g.Cant),
+                Descripcion = descripcion,
+                TextoOpcionGanadora = textoGanador
             };
         }
     }

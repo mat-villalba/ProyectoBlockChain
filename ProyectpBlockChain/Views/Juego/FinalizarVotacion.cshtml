@@ -10,16 +10,25 @@
     <div class="card-body">
         <h4 class="card-title">Partida @Model.PartidaId - Capítulo @Model.CapituloId</h4>
 
+        <div class="mt-2 text-muted">
+            @if (!string.IsNullOrEmpty(Model.Descripcion))
+            {
+                <p>@Model.Descripcion</p>
+            }
+        </div>
+
         <div class="mt-3">
             <h5>Votos por opción:</h5>
             <ul>
                 @foreach (var opcion in Model.VotosPorOpcion)
                 {
-                    <li>Capítulo <strong>@opcion.Key:</strong> @opcion.Value votos</li>
+                    <li>Opción <strong>@opcion.Key:</strong> @opcion.Value votos</li>
                 }
             </ul>
-            <p><strong>Ganador:</strong> 
-                <span class="badge bg-success">@Model.Ganador</span>
+            <p><strong>Opción ganadora:</strong> 
+                <span class="badge bg-success">
+                    @( !string.IsNullOrEmpty(Model.TextoOpcionGanadora) ? Model.TextoOpcionGanadora : ("Opción " + Model.Ganador) )
+                </span>
             </p>
 
             @if (Model.Desempate)
