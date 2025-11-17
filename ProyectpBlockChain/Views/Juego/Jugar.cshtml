@@ -25,13 +25,13 @@
 
 
 <div style="margin-top:20px;">
-    <button id="btn-op1">
+    <button id="btn-op1" data-next="@Model?.Capitulo?.IdOpcion1">
         @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Opcion1)
                 ? "Texto Opción 1"
                 : Model.Capitulo.Opcion1)
     </button>
 
-    <button id="btn-op2">
+    <button id="btn-op2" data-next="@Model?.Capitulo?.IdOpcion2">
         @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Opcion2)
                 ? "Texto Opción 2"
                 : Model.Capitulo.Opcion2)
@@ -127,8 +127,11 @@
             window.location.href = `/Juego/FinalizarVotacion?partidaId=${partidaId}&capituloId=${capituloId}`;
         });
 
-        document.getElementById("btn-op1").addEventListener("click", () => vote("Opcion1"));
-        document.getElementById("btn-op2").addEventListener("click", () => vote("Opcion2"));
+        const btnOp1 = document.getElementById("btn-op1");
+        const btnOp2 = document.getElementById("btn-op2");
+
+        btnOp1.addEventListener("click", () => vote(parseInt(btnOp1.dataset.next)));
+        btnOp2.addEventListener("click", () => vote(parseInt(btnOp2.dataset.next)));
 
 
     })();
