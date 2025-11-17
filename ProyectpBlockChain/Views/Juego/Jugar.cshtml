@@ -21,6 +21,21 @@
                 ? "Descripción del capitulo"
                 : Model.Capitulo.Descripcion)
     </p>
+    @{
+        var capId = Model?.Capitulo?.Id;
+        var imgPath = capId != null ? $"/img/{capId}.jpeg" : null;
+    }
+
+    @if (!string.IsNullOrEmpty(imgPath))
+    {
+        <div style="margin-top:12px;margin-bottom:18px;">
+            <img src="@imgPath"
+                 alt="Imagen del capítulo @(capId)"
+                 class="img-fluid"
+                 style="max-width:30em;height:auto;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.12);"
+                 onerror="this.style.display='none';" />
+        </div>
+    }
 </div>
 
 
