@@ -3,19 +3,16 @@
     ViewData["Title"] = "Iniciar Sesión";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
+<div class="cartel-inicio">
         <h2 class="text-center">Iniciar Sesión</h2>
         <p class="text-center text-muted">Conecta tu wallet y usa tu correo para ingresar.</p>
-        <hr />
-
+        <div>
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger" role="alert">
                 @TempData["Error"]
             </div>
         }
-
         <form id="loginForm" asp-action="IniciarSesion" method="post">
 
             @Html.AntiForgeryToken()
@@ -24,18 +21,15 @@
             <!-- Campo oculto para la Wallet -->
             <input type="hidden" asp-for="ContrasenaHash" id="walletAddressInput" />
 
-            <div class="mb-3">
-                <label asp-for="Correo" class="form-label">Correo Electrónico</label>
-                <input asp-for="Correo" type="email" class="form-control" placeholder="tu@correo.com" required />
+            <div class="ingreso">
+                <label asp-for="Correo">Correo Electrónico</label>
+                <input asp-for="Correo" type="email" placeholder="tu@correo.com" required />
                 <span asp-validation-for="Correo" class="text-danger"></span>
             </div>
-
-            <div class="d-grid gap-2 mt-4">
-                <button type="submit" class="btn btn-primary btn-lg">
+                <button type="submit" class="boton">
                     Conectar Wallet e Ingresar
                 </button>
-                <a asp-action="Registrar" class="btn btn-outline-secondary">No tengo cuenta</a>
-            </div>
+                <a asp-action="Registrar" class="link">No tengo cuenta</a>
         </form>
     </div>
 </div>

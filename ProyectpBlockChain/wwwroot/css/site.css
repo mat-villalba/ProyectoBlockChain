@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "JetBrains Mono",monospace;
+    font-family: "JetBrains Mono", monospace;
 }
 
 main {
@@ -12,10 +12,9 @@ main {
     min-height: 90vh;
     background-image: url('../fondoTemp.gif');
     background-size: cover;
-    background-position: center; 
-    color:aliceblue
+    background-position: center;
+    color: aliceblue;
 }
-
 
 .form-wrapper {
     min-width: 500px;
@@ -35,10 +34,10 @@ main {
     outline-offset: -8px;
 }
 
-    .form-wrapper h2 {
-        text-align: center;
-        margin-bottom: 1rem;
-    }
+.form-wrapper h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
 
 form {
     display: flex;
@@ -50,8 +49,7 @@ form label {
     font-weight: bold;
 }
 
-form input,
-form select {
+form input {
     padding: 0.8rem 1rem;
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -63,22 +61,18 @@ form .ingreso {
     flex-direction: column;
 }
 
-form select {
-    margin: 0%;
-}
-
 .button-30 {
     align-items: center;
     appearance: none;
     background-color: #FCFCFD;
     border-radius: 4px;
     border-width: 0;
-    box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+    box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
     box-sizing: border-box;
     color: #1F7D53;
     cursor: pointer;
     display: inline-flex;
-    font-family: "JetBrains Mono",monospace;
+    font-family: "JetBrains Mono", monospace;
     height: 48px;
     justify-content: center;
     line-height: 1;
@@ -89,12 +83,12 @@ form select {
     position: relative;
     text-align: left;
     text-decoration: none;
-    transition: box-shadow .15s,transform .15s;
+    transition: box-shadow .15s, transform .15s;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
     white-space: nowrap;
-    will-change: box-shadow,transform;
+    will-change: box-shadow, transform;
     font-size: 18px;
 }
 
@@ -108,6 +102,85 @@ form select {
 }
 
 .button-30:active {
-   box-shadow: #D6D6E7 0 3px 7px inset;
-   transform: translateY(2px);
+    box-shadow: #D6D6E7 0 3px 7px inset;
+    transform: translateY(2px);
+}
+
+.cartel-inicio, .cartel-registro {
+    max-width: 500px;
+    margin: 1rem auto;
+    padding: 1rem;
+    background: black;
+    color: white;
+    border: 4px solid #27391C;
+    box-shadow: none;
+    image-rendering: pixelated;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url('pixel-bg.png');
+    background-size: cover;
+    animation: flotar 4s ease-in-out infinite;
+    position: relative;
+    row-gap: 1em;
+}
+
+.cartel-inicio div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 0.3em;
+}
+
+.cartel-inicio form {
+    align-items: center;
+    row-gap: 1em;
+    margin-bottom: 5px;
+}
+
+.cartel-inicio .boton {
+    background-color: #1b1b1b;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: 3px solid #255F38;
+    border-radius: 0;
+    box-shadow: none;
+    display: inline-block;
+    transition: none;
+    image-rendering: pixelated;
+    width: 200px;
+    text-align: center;
+}
+
+.cartel-inicio .boton:hover {
+    box-shadow: 0 6px 14px rgba(78, 49, 170, 0.4);
+    background-color: #255F38;
+    color: #fff;
+}
+
+.cartel-inicio .link {
+    color: #255F38;
+}
+
+.cartel-inicio .link:hover {
+    text-decoration: underline;
+    color: #40995D;
+}
+
+@keyframes flotar {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
 }
