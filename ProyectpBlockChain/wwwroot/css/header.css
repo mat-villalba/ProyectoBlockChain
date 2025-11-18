@@ -51,3 +51,37 @@ nav a {
         padding: 10px 0px;
     }
 }
+
+.titulo-animado {
+    font-size: 1rem;
+    color: white;
+    overflow: hidden;
+    border-right: 3px solid white;
+    white-space: nowrap;
+    margin: 0 auto;
+
+    animation: escribir 4s steps(60, end), parpadeo-cursor .75s step-end infinite;
+    max-width: fit-content;
+}
+
+
+@keyframes escribir {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+/* Animación del cursor: aparece y desaparece */
+@keyframes parpadeo-cursor {
+    from, to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: white;
+    }
+}
