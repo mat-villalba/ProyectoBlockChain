@@ -45,36 +45,54 @@
 }
 
 .contenedor-opciones button {
-    align-items: center;
-    background-color: #000;
-    border: 2px solid #155639;
-    border-radius: 6px;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 2px 4px, rgba(0, 0, 0, 0.3) 0 7px 13px -3px, #1a1a1a 0 -3px 0 inset;
-    color: white;
+    width: 48%;
+    padding: 0.4rem;
+    background: #000;
+    color: #00ff88;
+    border: 3px solid #155639;
+    font-family: monospace;
+    font-size: 15px;
+    text-transform: uppercase;
     cursor: pointer;
-    display: inline-flex;
-    font-family: "JetBrains Mono", monospace;
-    height: 48px;
-    justify-content: center;
-    padding: 0 16px;
-    font-size: 18px;
-    line-height: 1;
-    transition: transform .15s ease, box-shadow .15s ease;
-    text-decoration: none;
-    white-space: nowrap;
-    user-select: none;
+    image-rendering: pixelated;
+    border-radius: 0;
+    transition: none;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+}
+
+.contenedor-opciones button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        transparent 3px,
+        rgba(0,255,100,0.08) 3px,
+        rgba(0,255,100,0.08) 6px
+    );
+    opacity: 0.4;
+    pointer-events: none;
 }
 
 .contenedor-opciones button:hover {
-    box-shadow: rgba(0, 0, 0, 0.6) 0 4px 8px, rgba(0, 0, 0, 0.4) 0 7px 13px -3px, #1F7D53 0 -3px 0 inset;
-    transform: translateY(-2px);
+    background: #0a2e1b;
+    color: #fff;
+    border-color: #00934a;
 }
 
 .contenedor-opciones button:active {
-    box-shadow: #27391C 0 3px 7px inset;
-    transform: translateY(2px);
+    background: #004422;
+    color: #fff;
+    border-color: #00934a;
+    transform: translateY(1px);
 }
 
+.contenedor-opciones button::before {
+    content: "▶ ";
+    color: #00934a;
+}
 
 #btn-finalizar {
     width: 200px;
