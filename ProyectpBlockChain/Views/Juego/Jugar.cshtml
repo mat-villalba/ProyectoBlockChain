@@ -60,7 +60,7 @@
 </div>
 
 <p id="status" style="margin-top:12px;color:green"></p>
-<pre id="out" style="white-space:pre-wrap;background:#f4f4f4;padding:10px;margin-top:8px;"></pre>
+@* <pre id="out" style="white-space:pre-wrap;background:#f4f4f4;padding:10px;margin-top:8px;"></pre> *@
 
 <button id="btn-finalizar" disabled>
     Finalizar votación
@@ -140,7 +140,7 @@
             await tx.wait();
 
             show("✅ Voto registrado en blockchain");
-
+            btnFinalizar.disabled = false;  
         } catch (err) {
             console.error(err);
             show("❌ Error al votar");

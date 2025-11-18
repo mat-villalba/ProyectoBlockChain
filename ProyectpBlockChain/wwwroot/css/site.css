@@ -82,6 +82,14 @@ main {
     row-gap: 0.5em;
 }
 
+.descripcion {
+    font-size: small;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 .cartel-inicio button {
     background-color: #1b1b1b;
     color: #fff;
