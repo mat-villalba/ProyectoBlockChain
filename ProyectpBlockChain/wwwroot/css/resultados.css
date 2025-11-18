@@ -1,0 +1,64 @@
+﻿.contenedor-resultados {
+    max-width: 800px;
+    margin: 1rem auto;
+    padding: 1rem;
+    background: black;
+    color: white;
+    border: 4px solid #255F38;
+    box-shadow: none;
+    image-rendering: pixelated;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url('pixel-bg.png');
+    background-size: cover;
+    animation: flotar 4s ease-in-out infinite;
+    position: relative;
+    row-gap: 1em;
+}
+
+.contenedor-resultados h4{
+    color:#307747;
+}
+
+.contenedor-resultados .historia p {
+  outline: 2px solid #000;
+  outline-offset: -4px;
+  background-color: #255F38;
+  image-rendering: pixelated;
+  padding:1em;
+}
+
+.contenedor-resultados li{
+    list-style:none;
+}
+
+.contenedor-resultados ul{
+    margin-bottom:10px;
+}
+
+.contenedor-resultados .boton{
+    background-color: #1b1b1b;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: 3px solid #255F38;
+    border-radius: 0;
+    box-shadow: none;
+    display: inline-block;
+    transition: none;
+    image-rendering: pixelated;
+    width: 200px;
+    text-align: center;
+
+}
+
+.contenedor-resultados .boton:hover{
+    box-shadow: 0 6px 14px rgba(78, 49, 170, 0.4);
+    background-color: #255F38;
+    color: #fff;
+    cursor:pointer;
+}

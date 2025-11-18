@@ -4,6 +4,8 @@
     ViewData["Title"] = "Votar historia";
 }
 
+<div class="principal">
+
 <h2>Votar historia</h2>
 
 <p>
@@ -13,12 +15,8 @@
 
 <p>Tiempo restante: <span id="timer" style="font-weight:bold;color:red"></span></p>
 
-<div style="margin-top:20px;">
-    <p>
-        @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Descripcion)
-                ? "Descripción del capitulo"
-                : Model.Capitulo.Descripcion)
-    </p>
+<div class="contenedor-historia">
+
     @{
         var capId = Model?.Capitulo?.Id;
         var imgPath = capId != null ? $"/img/{capId}.jpeg" : null;
@@ -26,18 +24,26 @@
 
     @if (!string.IsNullOrEmpty(imgPath))
     {
-        <div style="margin-top:12px;margin-bottom:18px;">
+        <div class="contenedor-imagen">
             <img src="@imgPath"
                  alt="Imagen del capítulo @(capId)"
                  class="img-fluid"
-                 style="max-width:30em;height:auto;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.12);"
                  onerror="this.style.display='none';" />
         </div>
     }
+
+        <div class="contenedor-texto">
+            <p>
+                @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Descripcion)
+                                ? "Descripción del capitulo"
+                                : Model.Capitulo.Descripcion)
+            </p>
+        </div>
+
 </div>
 
 
-<div style="margin-top:20px;">
+<div class="contenedor-opciones">
     <button id="btn-op1" data-next="@Model?.Capitulo?.IdOpcion1">
         @(string.IsNullOrWhiteSpace(Model?.Capitulo?.Opcion1)
                 ? "Texto Opción 1"
@@ -51,10 +57,12 @@
     </button>
 </div>
 
+</div>
+
 <p id="status" style="margin-top:12px;color:green"></p>
 <pre id="out" style="white-space:pre-wrap;background:#f4f4f4;padding:10px;margin-top:8px;"></pre>
 
-<button id="btn-finalizar" disabled class="btn btn-primary">
+<button id="btn-finalizar" disabled>
     Finalizar votación
 </button>
 
