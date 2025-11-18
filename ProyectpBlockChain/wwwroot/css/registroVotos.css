@@ -1,0 +1,72 @@
+﻿.contenedor-registro {
+    min-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: black;
+    color: white;
+    border: 4px solid #255F38;
+    box-shadow: none;
+    image-rendering: pixelated;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-image: url('pixel-bg.png');
+    background-size: cover;
+    position: relative;
+    row-gap: 1em;
+    animation: encender 1.4s ease-out, flotar 4s ease-in-out infinite;
+}
+
+.contenedor-registro::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 255, 0, 0.08) 2px,
+        rgba(0, 255, 0, 0.08) 4px
+    );
+    pointer-events: none;
+}
+
+.contenedor-registro table {
+    width: 100%;
+    margin-top: 0.2em;
+    background: rgba(0, 20, 10, 0.7);
+    color: #d6ffd6;
+    border: 2px solid #255F38;
+    font-family: monospace;
+    image-rendering: pixelated;
+}
+
+.contenedor-registro thead th {
+    background: #003a20;
+    color: #00ff99;
+    border-bottom: 2px solid #255F38;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contenedor-registro tbody tr {
+    border-bottom: 1px solid rgba(0, 255, 51, 0.2);
+}
+
+.contenedor-registro tbody tr:hover {
+    background: rgba(0, 255, 80, 0.1);
+    cursor: url('cursor-pixel.png'), auto;
+}
+
+.contenedor-registro td,
+.contenedor-registro th {
+    padding: 0.7rem;
+    text-align: center;
+}
+
+.contenedor-registro td:nth-child(2) {
+    white-space: normal;
+    word-break: break-all;
+    max-width: 600px;
+}

@@ -62,7 +62,7 @@ main {
 }
 
 .cartel-inicio {
-    max-width: 500px;
+    max-width: 700px;
     margin: 1rem auto;
     padding: 1rem;
     background: black;
@@ -82,12 +82,25 @@ main {
     row-gap: 0.5em;
 }
 
+.cartel-inicio::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 255, 0, 0.08) 2px,
+        rgba(0, 255, 0, 0.08) 4px
+    );
+    pointer-events: none;
+}
+
 .descripcion {
     font-size: small;
-    padding: 1rem;
+    padding: 1em;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
 }
 .alerta {
     color: red;
@@ -107,7 +120,7 @@ main {
     display: inline-block;
     transition: none;
     image-rendering: pixelated;
-    width: 200px;
+    width: 250px;
     text-align: center;
 }
 
@@ -119,6 +132,7 @@ main {
 }
 
 .cartel-inicio .link {
+    margin-top: 0.5rem;
     color: #255F38;
 }
 
