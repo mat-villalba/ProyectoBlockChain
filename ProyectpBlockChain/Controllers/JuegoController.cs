@@ -68,7 +68,6 @@ namespace ProyectoBlockChain.Web.Controllers
             return View("Jugar", dto);
         }
 
-
         public async Task<IActionResult> FinalizarVotacion(int partidaId, int capituloId)
         {
             var resultado = await _logicaJuego.FinalizarVotacion(partidaId, capituloId);

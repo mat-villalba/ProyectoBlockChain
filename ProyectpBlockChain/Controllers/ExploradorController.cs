@@ -9,21 +9,15 @@ namespace ProyectoBlockChain.Web.Controllers
 {
     public class ExploradorController : Controller
     {
-        private readonly BlockchainSettings _blockchainSettings;
         private readonly ILogicaExplorador _logicaExplorador;
 
-        public ExploradorController(ILogicaExplorador LogicaExplorador, BlockchainSettings blockchainOptions)
+        public ExploradorController(ILogicaExplorador LogicaExplorador)
         {
-            _logicaExplorador = LogicaExplorador;
-            _blockchainSettings = blockchainOptions;
+            _logicaExplorador = LogicaExplorador;;
         }
         public async Task<IActionResult> VerVotos()
         {
-            var votos = await _logicaExplorador.ObtenerTodosLosVotos(
-                _blockchainSettings.NodeUrl,
-                _blockchainSettings.ContractAddress,
-                _blockchainSettings.ContractAbi
-                );
+            var votos = await _logicaExplorador.ObtenerTodosLosVotos();
 
             return View(votos);
         }

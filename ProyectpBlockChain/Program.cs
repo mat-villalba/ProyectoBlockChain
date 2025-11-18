@@ -66,8 +66,6 @@ builder.Services.AddSingleton<Web3>(provider =>
     return new Web3(account, settings.NodeUrl);
 });
 
-
-
 builder.Services.AddScoped<JuegoLogica>();
 builder.Services.AddScoped<ExploradorLogica>();
 builder.Services.AddScoped<ITemporizador, TemporizadorLogica>();

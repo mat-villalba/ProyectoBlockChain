@@ -1,4 +1,8 @@
-﻿using Nethereum.Web3;
+﻿using Microsoft.Extensions.Configuration;
+using Nethereum.Contracts;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using ProyectoBlockChain.Data.Data;
 using ProyectoBlockChain.Logica.Core;
 using ProyectoBlockChain.Logica.Interfaces;
 using System.Numerics;
@@ -8,15 +12,27 @@ namespace ProyectoBlockChain.Logica
     public class ExploradorLogica : ILogicaExplorador
     {
 
-        public async Task<List<VotoSolidityDTO>> ObtenerTodosLosVotos(string nodeUrl, string contractAddress, string contractAbi)
-        {
-            var web3 = new Web3(nodeUrl);
-            var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
+        private readonly Web3 _web3;
+        private readonly Contract _contrato;
+        private readonly Account _cuentaBackend;
 
-            var funcionProxima = contrato.GetFunction("proximaPartidaId");
+
+        public ExploradorLogica(IConfiguration config, Account cuentaBackend, Web3 web3)
+        {
+            _web3 = web3;
+            _cuentaBackend = cuentaBackend;
+            var abi = config["BlockchainSettings:ContractAbi"];
+            var address = config["BlockchainSettings:ContractAddress"];
+
+            _contrato = _web3.Eth.GetContract(abi, address);
+        }
+
+        public async Task<List<VotoSolidityDTO>> ObtenerTodosLosVotos()
+        {
+            var funcionProxima = _contrato.GetFunction("proximaPartidaId");
             var totalPartidas = await funcionProxima.CallAsync<BigInteger>();
 
-            var funcionVotos = contrato.GetFunction("obtenerVotos");
+            var funcionVotos = _contrato.GetFunction("obtenerVotos");
 
             var votosTotales = new List<VotoSolidityDTO>();
 
@@ -35,20 +51,6 @@ namespace ProyectoBlockChain.Logica
 
             return votosTotales;
         }
-       /* public async Task<List<DecisionFinalSolidityDTO>> ObtenerDecisionesFinales(string nodeUrl, string contractAddress, string contractAbi, BigInteger idPartida)
-        {
-            var web3 = new Web3(nodeUrl);
-            var contrato = web3.Eth.GetContract(contractAbi, contractAddress);
-
-            var funcion = contrato.GetFunction("obtenerHistorialPartida");
-            var decisiones = await funcion.CallDeserializingToObjectAsync<List<DecisionFinalSolidityDTO>>(idPartida);
-
-
-            foreach (var d in decisiones)
-                d.PartidaId = (int)idPartida;
-
-            return decisiones;
-        } */
 
     }
 }
