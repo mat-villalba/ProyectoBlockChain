@@ -11,7 +11,7 @@
         <p class="lead">Vas a explorar un mundo donde tus decisiones y la tecnología se combinan.</p>
         <p class="lead">Conecta tu cuenta para comenzar esta aventura!</p>
     </div>
-    @* <p class="text-muted small">Wallet: @walletUsuario</p> *@
+    <p class="alerta" id="alerta" disabled></p>
 
 
 @if (TempData["Mensaje"] != null)
@@ -32,8 +32,8 @@
 <button id="connectWalletBtn">Conectar billetera</button>
 <p id="walletAddress"></p>
 
-<button id="startGameBtn" disabled>Comenzar juego</button>
-<a asp-controller="Explorador" asp-action="VerVotos" class="link">Ver votos registrados en la blockchain </a>
+<button id="startGameBtn">Comenzar juego</button>
+<a asp-controller="Explorador" asp-action="VerVotos" id="votosRegistrados" class="link">Ver votos registrados en la blockchain </a>
 
 </div>
 
@@ -42,7 +42,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
-    let userAddress = null;
+    let userAddress = localStorage.getItem("userAddress");
 
     async function connectWallet() {
         if (typeof window.ethereum === "undefined") {
@@ -50,8 +50,15 @@
             return;
         }
 
+        // verificar que no este conectada ya
+        var conexionCuenta = localStorage.getItem("userAddress");
+
+        if(conexionCuenta !== null){
+            document.getElementById("alerta").innerText = "Cuenta ya vinculada."
+            return;
+        }
+
         try {
-            // 1️⃣ Pedir cuenta al usuario (abre MetaMask)
             const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
             const account = accounts[0];
             userAddress = account;
@@ -63,12 +70,13 @@
                 params: [message, account],
             });
 
-            // (Opcional) Podrías enviar { account, signature } al backend para verificar la firma
             console.log("Firma generada:", signature);
+            localStorage.setItem("userAddress", userAddress);
 
-            // 3️⃣ Actualizar UI
             document.getElementById("walletAddress").innerText = `Billetera conectada: ${userAddress}`;
             document.getElementById("startGameBtn").disabled = false;
+            document.getElementById("connectWalletBtn").disabled = true;
+            document.getElementById("alerta").innerText = "";
 
         } catch (error) {
             console.error("Error al conectar o firmar:", error);
@@ -83,12 +91,10 @@
         window.ethereum.on("accountsChanged", (accounts) => {
             if (accounts.length === 0) {
                 userAddress = null;
-                document.getElementById("walletAddress").innerText = "Billetera desconectada.";
-                document.getElementById("startGameBtn").disabled = true;
+                document.getElementById("alerta").innerText = "Billetera desconectada.";
             } else {
                 userAddress = accounts[0];
                 document.getElementById("walletAddress").innerText = `Billetera conectada: ${userAddress}`;
-                document.getElementById("startGameBtn").disabled = false;
             }
         });
     }
@@ -96,7 +102,8 @@
     // 5️⃣ Al presionar "Comenzar juego"
     document.getElementById("startGameBtn").addEventListener("click", async () => {
         if (!userAddress) {
-            alert("Primero conectá y firmá con tu billetera para comenzar el juego.");
+            document.getElementById("alerta").disabled = false;
+            document.getElementById("alerta").innerText = "Primero conectá tu billetera para comenzar el juego.";
             return;
         }
 
@@ -106,8 +113,17 @@
             alert("Tu billetera se desconectó. Volvé a iniciar sesión.");
             return;
         }
-
+        document.getElementById("alerta").innerText = "";
         // Redirigir al juego
         window.location.href = "/Juego/Jugar";
+    });
+
+    document.getElementById("votosRegistrados").addEventListener("click", async (e) => {
+        if (!userAddress) {
+            e.preventDefault();
+            document.getElementById("alerta").disabled = false;
+            document.getElementById("alerta").innerText = "Primero conectá tu billetera para ver los votos registrados.";
+            return;
+        }
     });
 </script>

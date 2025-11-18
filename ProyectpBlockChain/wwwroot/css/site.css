@@ -89,6 +89,11 @@ main {
     flex-direction: column;
     gap: 0.5rem;
 }
+.alerta {
+    color: red;
+    font-weight: bold;
+    font-size: small
+}
 
 .cartel-inicio button {
     background-color: #1b1b1b;
