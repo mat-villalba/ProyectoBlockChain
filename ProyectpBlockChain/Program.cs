@@ -69,15 +69,10 @@ builder.Services.AddSingleton<Web3>(provider =>
 
 
 builder.Services.AddScoped<JuegoLogica>();
-builder.Services.AddScoped<HistoriaLogica>();
-builder.Services.AddScoped<UsuarioLogica>();
 builder.Services.AddScoped<ExploradorLogica>();
 builder.Services.AddScoped<ITemporizador, TemporizadorLogica>();
-builder.Services.AddSingleton<EstadoGlobal>();
 
 builder.Services.AddScoped<ILogicaDeJuego, JuegoLogica>();
-builder.Services.AddScoped<ILogicaHistorial, HistoriaLogica>();
-builder.Services.AddScoped<ILogicaJugador, UsuarioLogica>();
 builder.Services.AddScoped<ILogicaExplorador, ExploradorLogica>();
 
 // Add services to the container.
@@ -103,7 +98,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Jugador}/{action=IniciarSesion}/{id?}")
+    pattern: "{controller=Inicio}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 

@@ -3,12 +3,11 @@
     var nombreUsuario = Context.Session.GetString("UserName");
     var walletUsuario = Context.Session.GetString("UserWalletAddress");
 }
-
-<div class="text-center">
+ <div class="text-center">
     <h1 class="display-4">¡Bienvenido, @nombreUsuario!</h1>
     <p class="lead">Estás en el lobby de "Aventura Interactiva con Blockchain".</p>
     <p class="text-muted small">Wallet: @walletUsuario</p>
-</div>
+</div> 
 <hr />
 
 @if (TempData["Mensaje"] != null)
@@ -31,8 +30,8 @@
 
 <button id="startGameBtn" disabled>Comenzar juego</button>
 <a asp-controller="Explorador" asp-action="VerVotos">Ver votos registrados en la blockchain </a>
-
-<a asp-controller="Explorador" asp-action="VerPartidas">Ver partidas registradas en la blockchain </a>
+@* 
+<a asp-controller="Explorador" asp-action="VerPartidas">Ver partidas registradas en la blockchain </a> *@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>

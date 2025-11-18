@@ -8,6 +8,7 @@ using Nethereum.ABI.FunctionEncoding.Attributes;
 
 namespace ProyectoBlockChain.Logica.Core
 {
+    [FunctionOutput]
     public class DecisionFinalSolidityDTO
     {
         [Parameter("uint256", "capituloId", 1)]
