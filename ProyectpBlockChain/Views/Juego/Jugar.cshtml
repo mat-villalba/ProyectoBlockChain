@@ -159,4 +159,15 @@
 
 
     })();
+
+   
+    window.addEventListener('load', function() {
+        if (performance.navigation.type === 1) {
+            // La página se recargó
+            const partidaId = @Model.PartidaId;
+            const capituloId = @Model.Capitulo.Id;
+            window.location.href = `/Juego/FinalizarJuego?partidaId=${partidaId}`;
+        }
+    });
+
 </script>
